@@ -64,17 +64,6 @@ border:1px solid #cbd5e1;
 font-size:12px;
 }
 
-.plus{
-background:#2563eb;
-color:white;
-border:none;
-width:28px;
-height:28px;
-border-radius:8px;
-cursor:pointer;
-font-weight:bold;
-}
-
 .output{
 white-space:pre-wrap;
 font-size:12px;
@@ -99,27 +88,39 @@ font-family:monospace;
 <div class="panel">
 <div class="section-title">Identité</div>
 
-<div class="row"><label>Date</label><input type="date" id="date"></div>
-<div class="row"><label>Spécialité</label><select id="specialite"></select></div>
-<div class="row"><label>Opérateur</label><select id="operateur"></select></div>
-<div class="row"><label>Anesthésiste</label><select id="anesth"></select></div>
+<div class="row">
+<label>Date</label>
+<input type="date" id="date">
+</div>
+
+<div class="row">
+<label>Spécialité</label>
+<select id="specialite"></select>
+</div>
+
+<div class="row">
+<label>Opérateur</label>
+<select id="operateur"></select>
+</div>
+
+<div class="row">
+<label>Anesthésiste</label>
+<select id="anesth"></select>
+</div>
 </div>
 
 <!-- GESTE -->
 <div class="panel">
 <div class="section-title">Geste</div>
 
-<div id="gestesContainer">
-
-<div class="row geste-line">
+<div class="row">
 <label>Geste</label>
-<select class="geste"></select>
-<button class="plus" onclick="addGeste()">+</button>
+<select id="geste"></select>
 </div>
 
 <div class="row">
 <label>Côté</label>
-<select class="cote">
+<select id="cote">
 <option value="">--</option>
 <option>Gauche</option>
 <option>Droite</option>
@@ -128,9 +129,7 @@ font-family:monospace;
 
 <div class="row">
 <label>Commentaire</label>
-<input class="commentaire">
-</div>
-
+<input id="commentaire">
 </div>
 </div>
 
@@ -138,7 +137,6 @@ font-family:monospace;
 <div class="panel">
 <div class="section-title">Per-opératoire</div>
 
-<!-- CONDITIONNEMENT -->
 <div class="row">
 <label>Conditionnement</label>
 <div>
@@ -149,63 +147,6 @@ font-family:monospace;
 <label><input type="checkbox" id="bis"> BIS</label>
 <label><input type="checkbox" id="tof"> TOF</label>
 </div>
-</div>
-
-<!-- INDUCTION -->
-<div class="row">
-<label>Induction</label>
-<div>
-<label><input type="checkbox" id="propofol"> Propofol</label>
-<label><input type="checkbox" id="etomidate"> Etomidate</label>
-<label><input type="checkbox" id="ketamine"> Ketamine</label>
-<label><input type="checkbox" id="sufentanil"> Sufentanil</label>
-<label><input type="checkbox" id="remifentanil"> Remifentanil</label>
-</div>
-</div>
-
-<!-- CURARE -->
-<div class="row">
-<label>Curare</label>
-<div>
-<label><input type="checkbox" id="curare_aucun"> Aucun</label>
-<label><input type="checkbox" id="atracurium"> Atracurium</label>
-<label><input type="checkbox" id="rocuronium"> Rocuronium</label>
-<label><input type="checkbox" id="celocurine"> Celocurine</label>
-</div>
-</div>
-
-<!-- VAS -->
-<div class="row">
-<label>VAS</label>
-<div>
-<label><input type="checkbox" id="vs"> VS</label>
-<label><input type="checkbox" id="ml"> ML</label>
-<label><input type="checkbox" id="ventilation"> Ventilation</label>
-<label><input type="checkbox" id="iot" onchange="toggleIOT()"> IOT</label>
-
-<div id="iotBox" style="display:none;margin-top:6px;">
-<input id="cormack" placeholder="Cormack">
-<input id="pogo" placeholder="POGO">
-<input id="sonde" placeholder="Sonde">
-</div>
-
-</div>
-</div>
-
-<div class="row">
-<label>Antibiothérapie</label><input id="atb">
-</div>
-
-<div class="row">
-<label>Entretien</label><input id="entretien">
-</div>
-
-<div class="row">
-<label>Noradrénaline</label><input id="norad">
-</div>
-
-<div class="row">
-<label>Autres</label><input id="autres">
 </div>
 
 <hr>
@@ -226,7 +167,7 @@ return day+"/"+m+"/"+y;
 }
 date.valueAsDate=new Date();
 
-/* ================= DATA COMPLETE RESTAURÉE ================= */
+/* ================= DATA COMPLET ================= */
 
 const anesthesistes=[
 "Dr Stéphanie ALBOUY","Dr Guy ARMANDO","Dr Laure BONNET","Dr Mohammed BOUREGBA",
@@ -245,66 +186,61 @@ const operateurs={
 "Chirurgie Viscérale":[
 "Dr Adolfo GAVELLI","Dr Anne DUBOIS-VERDIER","Dr Anna MARMORALE",
 "Dr Hubert PERRIN","Dr Nicoletta AMBROSIANI","Pr Fabrizio PANARO"
-],
-"Urologie":[
-"Dr Aurélie FLOCH","Dr Maher KECHAOU","Dr Patrick-Julien TREACY",
-"Dr Rafaelle CURSIO","Dr Xavier CARPENTIER"
-],
-"Endoscopie Digestive":[
-"Dr Alexandre CHARACHON","Dr Daniela AGREFILO",
-"Dr Jean-François DEMARQUAY","Dr Juliette LAVEYSSIERE","Dr Luc DIEZ"
-],
-"Chirurgie Gynécologique":[
-"Dr Abdi BAFGHI","Dr Guillaume BENOIST","Dr Julia AUMIPHIN",
-"Dr Reda DJAFER","Dr Wafaa EL LAAMOUCHI","Pr Bruno CARBONNE"
-],
-"Chirurgie ORL":[
-"Dr Diane LAZARD","Dr Riad BERGUIGA","Dr Sandrine CANIVET"
-],
-"Radiologie Interventionnelle":[
-"Dr Federico TORRE","Dr Giuseppe GUZZARDI"
-],
-"Cardiologie Interventionnelle":[
-"Dr Gabriel LATCU","Dr Denis GATY"
-],
-"Chirurgie Maxillo-Faciale":[
-"Dr Albert VAN HOVE"
-],
-"Endoscopie Bronchique":[
-"Dr Cécile MAINCENT","Dr Constance BLANDIN"
-],
-"Chirurgie Esthétique":[
-"Dr Marie-Christine MISSANA","Dr Abdi BAFGHI"
 ]
 };
 
 const gestes={
-"Chirurgie Viscérale":{
-"Appendicectomie":{},
-"Colectomie":{},
-"Cholécystectomie":{},
-"Segmentectomie Hépatique":{},
-"Hernie inguinale":{},
-"Hernie ombilicale":{},
-"Duodéno-pancréatectomie céphalique":{},
-"Oesophagectomie Lewis-Santy":{}
-},
 "Chirurgie Orthopédique":{
 "Prothèse Totale de Hanche":{},
-"Prothèse Totale de Genou":{},
-"Arthroscopie de Genou":{},
-"Arthroscopie d’épaule":{},
-"Canal carpien":{},
-"Prothèse totale d’épaule":{},
-"Clou gamma":{},
-"Plaque poignet":{},
-"Plaque cheville":{}
+"Prothèse Totale de Genou":{}
+},
+"Chirurgie Viscérale":{
+"Appendicectomie":{},
+"Colectomie":{}
 }
 };
 
-/* INIT */
-Object.keys(operateurs).forEach(s=>specialite.innerHTML+=`<option>${s}</option>`);
-anesthesistes.forEach(a=>anesth.innerHTML+=`<option>${a}</option>`);
+/* ================= INIT ================= */
+
+const specialite=document.getElementById("specialite");
+const operateur=document.getElementById("operateur");
+const geste=document.getElementById("geste");
+const anesth=document.getElementById("anesth");
+
+/* spécialités */
+Object.keys(operateurs).forEach(s=>{
+specialite.innerHTML+=`<option>${s}</option>`;
+});
+
+/* anesth */
+anesthesistes.forEach(a=>{
+anesth.innerHTML+=`<option>${a}</option>`;
+});
+
+/* ================= FONCTIONS ================= */
+
+function majOperateurs(){
+let s=specialite.value;
+operateur.innerHTML="";
+(operateurs[s]||[]).forEach(o=>{
+operateur.innerHTML+=`<option>${o}</option>`;
+});
+}
+
+function majGestes(){
+let s=specialite.value;
+geste.innerHTML="";
+Object.keys(gestes[s]||{}).forEach(g=>{
+geste.innerHTML+=`<option>${g}</option>`;
+});
+}
+
+/* EVENTS */
+specialite.addEventListener("change",()=>{
+majOperateurs();
+majGestes();
+generer();
+});
 
 /* CONDITIONNEMENT */
 function conditionnementText(){
@@ -341,21 +277,11 @@ t+="DATE : "+formatDateFR(date.value)+"\n";
 t+="OPERATEUR : "+operateur.value+"\n";
 t+="ANESTHESISTE : "+anesth.value+"\n\n";
 
-/* gestes */
-document.querySelectorAll(".geste-line").forEach((line,i)=>{
-let g=line.querySelector(".geste")?.value||"";
-let c=line.querySelector(".cote")?.value||"";
-let com=line.querySelector(".commentaire")?.value||"";
+t+="GESTE : "+geste.value;
+if(cote.value) t+=" ("+cote.value+")";
+if(commentaire.value) t+=" - "+commentaire.value;
 
-if(g){
-t+="GESTE "+(i+1)+" : "+g;
-if(c) t+=" ("+c+")";
-if(com) t+=" - "+com;
-t+="\n";
-}
-});
-
-t+="\nConditionnement :\n";
+t+="\n\nConditionnement :\n";
 conditionnementText().forEach(x=>{
 t+="- "+x+"\n";
 });
@@ -363,11 +289,14 @@ t+="- "+x+"\n";
 resultat.innerText=t;
 }
 
-/* listeners */
+/* LISTENERS */
 document.querySelectorAll("input,select").forEach(e=>{
 e.addEventListener("input",generer);
 });
 
+/* INIT CALLS */
+majOperateurs();
+majGestes();
 generer();
 
 </script>
