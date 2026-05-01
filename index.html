@@ -64,43 +64,15 @@ border:1px solid #cbd5e1;
 font-size:12px;
 }
 
-.perop-row{
-display:grid;
-grid-template-columns:220px 1fr;
-margin-bottom:10px;
-align-items:start;
-}
-
-.checkbox-line{
-display:flex;
-flex-wrap:wrap;
-gap:6px;
-}
-
-.checkbox-line label{
-border:1px solid #cbd5e1;
-padding:6px 8px;
-border-radius:8px;
-cursor:pointer;
-background:white;
-}
-
-.checkbox-line input{
-display:none;
-}
-
-.checkbox-line input:checked + span{
+.plus{
 background:#2563eb;
 color:white;
-padding:2px 4px;
-border-radius:6px;
-}
-
-.subbox{
-display:none;
-margin-top:6px;
-gap:6px;
-flex-wrap:wrap;
+border:none;
+width:28px;
+height:28px;
+border-radius:8px;
+cursor:pointer;
+font-weight:bold;
 }
 
 .output{
@@ -127,74 +99,64 @@ font-family:monospace;
 <div class="panel">
 <div class="section-title">Identité</div>
 
-<div class="row"><label>Date</label><input type="date" id="date"></div>
-<div class="row"><label>Opérateur</label><select id="operateur"></select></div>
-<div class="row"><label>Anesthésiste</label><select id="anesth"></select></div>
+<div class="row">
+<label>Date</label>
+<input type="date" id="date">
+</div>
+
+<div class="row">
+<label>Opérateur</label>
+<select id="operateur"></select>
+</div>
+
+<div class="row">
+<label>Anesthésiste</label>
+<select id="anesth"></select>
+</div>
 </div>
 
 <!-- GESTE -->
 <div class="panel">
 <div class="section-title">Geste</div>
 
-<div class="row"><label>Spécialité</label><select id="specialite"><option value="">--</option></select></div>
-<div class="row"><label>Geste</label><select id="geste"></select></div>
-<div class="row"><label>Côté</label><select id="cote"><option value="">--</option><option>Gauche</option><option>Droite</option></select></div>
-<div class="row"><label>Commentaire</label><input id="commentaire"></div>
+<div id="gestesContainer">
+
+<div class="row geste-line">
+<label>Geste</label>
+<select class="geste"></select>
+<button class="plus" onclick="addGeste()">+</button>
+</div>
+
+<div class="row">
+<label>Côté</label>
+<select class="cote">
+<option value="">--</option>
+<option>Gauche</option>
+<option>Droite</option>
+</select>
+</div>
+
+<div class="row">
+<label>Commentaire</label>
+<input class="commentaire">
+</div>
+
+</div>
 </div>
 
 <!-- PEROP -->
 <div class="panel">
 <div class="section-title">Per-opératoire</div>
 
-<!-- CONDITIONNEMENT -->
-<div class="perop-row">
-Conditionnement
-<div class="checkbox-line">
-<label><input type="checkbox" id="scope"><span>Scope</span></label>
-<label><input type="checkbox" id="vvp"><span>VVP</span></label>
-<label><input type="checkbox" id="kta"><span>KTA</span></label>
-<label><input type="checkbox" id="ktc"><span>KTC</span></label>
-<label><input type="checkbox" id="bis"><span>BIS</span></label>
-<label><input type="checkbox" id="tof"><span>TOF</span></label>
-</div>
-</div>
-
-<!-- INDUCTION -->
-<div class="perop-row">
-Induction
-<div class="checkbox-line">
-<label><input type="checkbox" id="propofol"><span>Propofol</span></label>
-<label><input type="checkbox" id="etomidate"><span>Etomidate</span></label>
-<label><input type="checkbox" id="ketamine"><span>Ketamine</span></label>
-<label><input type="checkbox" id="sufentanil"><span>Sufentanil</span></label>
-<label><input type="checkbox" id="remifentanil"><span>Remifentanil</span></label>
-</div>
-</div>
-
-<!-- CURARE -->
-<div class="perop-row">
-Curare
-<div class="checkbox-line">
-<label><input type="checkbox" id="curare_aucun"><span>Aucun</span></label>
-<label><input type="checkbox" id="atracurium"><span>Atracurium</span></label>
-<label><input type="checkbox" id="rocuronium"><span>Rocuronium</span></label>
-<label><input type="checkbox" id="celocurine"><span>Celocurine</span></label>
-</div>
-</div>
-
-<!-- VAS -->
-<div class="perop-row">
-Voies aériennes supérieures
+<div class="row">
+<label>VAS</label>
 <div>
+<label><input type="checkbox" id="vs"> VS</label>
+<label><input type="checkbox" id="ml"> ML</label>
+<label><input type="checkbox" id="ventilation"> Ventilation</label>
+<label><input type="checkbox" id="iot" onchange="toggleIOT()"> IOT</label>
 
-<div class="checkbox-line">
-<label><input type="checkbox" id="vs"><span>VS</span></label>
-<label><input type="checkbox" id="ml"><span>ML</span></label>
-<label><input type="checkbox" id="ventilation"><span>Ventilation</span></label>
-<label><input type="checkbox" id="iot" onchange="toggleIOT()"><span>IOT</span></label>
-</div>
-
-<div class="subbox" id="iotBox">
+<div id="iotBox" style="display:none;margin-top:6px;">
 <input id="cormack" placeholder="Cormack">
 <input id="pogo" placeholder="POGO">
 <input id="sonde" placeholder="Sonde">
@@ -203,26 +165,117 @@ Voies aériennes supérieures
 </div>
 </div>
 
-<div class="perop-row">Antibiothérapie <input id="atb"></div>
-<div class="perop-row">Entretien <input id="entretien"></div>
-<div class="perop-row">Noradrénaline <input id="norad"></div>
-<div class="perop-row">Autres <input id="autres"></div>
-
 <hr>
+
 <div class="output" id="resultat"></div>
 
 </div>
+
 </div>
 
 <script>
 
-/* DATE */
+/* ================= DATE ================= */
+function formatDateFR(d){
+if(!d) return "";
+let [y,m,day]=d.split("-");
+return day+"/"+m+"/"+y;
+}
 date.valueAsDate=new Date();
 
-/* DATA (INCHANGÉES) */
-const anesthesistes=["Dr Stéphanie ALBOUY","Dr Guy ARMANDO","Dr Laure BONNET"];
-const operateurs={"Chirurgie Orthopédique":["Dr Hugo DARMANTE"],"Chirurgie Viscérale":["Dr Adolfo GAVELLI"]};
-const gestes={"Chirurgie Orthopédique":{"PTH":{cote:true}},"Chirurgie Viscérale":{"Appendicectomie":{}}};
+/* ================= DONNÉES ORIGINALES RESTAURÉES ================= */
+
+const anesthesistes=[
+"Dr Stéphanie ALBOUY","Dr Guy ARMANDO","Dr Laure BONNET","Dr Mohammed BOUREGBA",
+"Dr Jean CATINEAU","Dr Alexandre FERRIERO","Dr Arthur FROHLICH",
+"Dr Jean-Philippe GUERIN","Dr Sébastien GHIGLIONE","Dr Léa LEY-GHIGLIONE",
+"Dr Lucile LEVASSEUR","Dr Riyad MENADE","Dr Nicolas OPPRECHT",
+"Dr Nicolas PARTOUCHE","Pr Bertrand PRUNET","Dr Gildas ROUSSEAU",
+"Dr Nicolo SALA","Dr Mathilde SEVERAC","Dr Wajdi SULTAN",
+"Dr Daisy TRAN","Dr Rémy WIDEHEM","Dr Félix ZAMARON"
+];
+
+const operateurs={
+"Chirurgie Orthopédique":[
+"Dr Hugo DARMANTE","Dr Matthieu GHREA","Dr Nicolas GUILLOT","Dr Tristan LASCAR"
+],
+"Chirurgie Viscérale":[
+"Dr Adolfo GAVELLI","Dr Anne DUBOIS-VERDIER","Dr Anna MARMORALE",
+"Dr Hubert PERRIN","Dr Nicoletta AMBROSIANI","Pr Fabrizio PANARO"
+],
+"Urologie":[
+"Dr Aurélie FLOCH","Dr Maher KECHAOU","Dr Patrick-Julien TREACY",
+"Dr Rafaelle CURSIO","Dr Xavier CARPENTIER"
+],
+"Endoscopie Digestive":[
+"Dr Alexandre CHARACHON","Dr Daniela AGREFILO",
+"Dr Jean-François DEMARQUAY","Dr Juliette LAVEYSSIERE","Dr Luc DIEZ"
+],
+"Chirurgie Gynécologique":[
+"Dr Abdi BAFGHI","Dr Guillaume BENOIST","Dr Julia AUMIPHIN",
+"Dr Reda DJAFER","Dr Wafaa EL LAAMOUCHI","Pr Bruno CARBONNE"
+],
+"Chirurgie ORL":[
+"Dr Diane LAZARD","Dr Riad BERGUIGA","Dr Sandrine CANIVET"
+],
+"Radiologie Interventionnelle":[
+"Dr Federico TORRE","Dr Giuseppe GUZZARDI"
+],
+"Cardiologie Interventionnelle":[
+"Dr Gabriel LATCU","Dr Denis GATY"
+],
+"Chirurgie Maxillo-Faciale":[
+"Dr Albert VAN HOVE"
+],
+"Endoscopie Bronchique":[
+"Dr Cécile MAINCENT","Dr Constance BLANDIN"
+],
+"Chirurgie Esthétique":[
+"Dr Marie-Christine MISSANA","Dr Abdi BAFGHI"
+]
+};
+
+const gestes={
+"Chirurgie Viscérale":{
+"Appendicectomie":{},
+"Colectomie":{},
+"Cholécystectomie":{},
+"Segmentectomie Hépatique":{},
+"Hernie inguinale":{},
+"Hernie ombilicale":{},
+"Duodéno-pancréatectomie céphalique":{},
+"Oesophagectomie Lewis-Santy":{}
+},
+"Chirurgie Orthopédique":{
+"Prothèse Totale de Hanche":{},
+"Prothèse Totale de Genou":{},
+"Arthroscopie de Genou":{},
+"Arthroscopie d’épaule":{},
+"Canal carpien":{},
+"Prothèse totale d’épaule":{},
+"Clou gamma":{},
+"Plaque poignet":{},
+"Plaque cheville":{}
+},
+"Endoscopie Digestive":{
+"Gastroscopie":{},
+"Gastroscopie + Coloscopie":{},
+"Coloscopie":{},
+"ERCP":{},
+"Echo-endoscopie":{},
+"Mucosectomie":{},
+"POEM":{},
+"Dissection sous-muqueuse":{}
+},
+"Urologie":{},
+"Chirurgie Gynécologique":{},
+"Chirurgie ORL":{},
+"Radiologie Interventionnelle":{},
+"Cardiologie Interventionnelle":{},
+"Chirurgie Maxillo-Faciale":{},
+"Endoscopie Bronchique":{},
+"Chirurgie Esthétique":{}
+};
 
 /* INIT */
 Object.keys(operateurs).forEach(s=>specialite.innerHTML+=`<option>${s}</option>`);
@@ -231,15 +284,63 @@ anesthesistes.forEach(a=>anesth.innerHTML+=`<option>${a}</option>`);
 /* SPECIALITE */
 specialite.addEventListener("change",()=>{
 let s=specialite.value;
+
 operateur.innerHTML="";
 (operateurs[s]||[]).forEach(o=>operateur.innerHTML+=`<option>${o}</option>`);
-geste.innerHTML="";
-Object.keys(gestes[s]||{}).forEach(g=>geste.innerHTML+=`<option>${g}</option>`);
+
+document.querySelectorAll(".geste").forEach(sel=>{
+sel.innerHTML="";
+Object.keys(gestes[s]||{}).forEach(g=>{
+sel.innerHTML+=`<option>${g}</option>`;
 });
+});
+});
+
+/* ADD GESTE */
+function addGeste(){
+
+let container=document.getElementById("gestesContainer");
+
+let div=document.createElement("div");
+
+div.innerHTML=`
+<div class="row geste-line">
+<label>Geste</label>
+<select class="geste"></select>
+</div>
+
+<div class="row">
+<label>Côté</label>
+<select class="cote">
+<option value="">--</option>
+<option>Gauche</option>
+<option>Droite</option>
+</select>
+</div>
+
+<div class="row">
+<label>Commentaire</label>
+<input class="commentaire">
+</div>
+`;
+
+container.appendChild(div);
+
+/* refill */
+document.querySelectorAll(".geste").forEach(sel=>{
+let s=specialite.value;
+sel.innerHTML="";
+Object.keys(gestes[s]||{}).forEach(g=>{
+sel.innerHTML+=`<option>${g}</option>`;
+});
+});
+
+generer();
+}
 
 /* IOT */
 function toggleIOT(){
-iotBox.style.display = iot.checked ? "flex":"none";
+iotBox.style.display = iot.checked ? "block":"none";
 }
 
 /* GENERATION */
@@ -247,15 +348,28 @@ function generer(){
 
 let t="";
 
-t+="DATE : "+date.value+"\n";
+t+="DATE : "+formatDateFR(date.value)+"\n";
 t+="OPERATEUR : "+operateur.value+"\n";
 t+="ANESTHESISTE : "+anesth.value+"\n\n";
 
-t+="GESTE : "+geste.value+"\n\n";
+/* gestes */
+document.querySelectorAll(".geste-line").forEach((line,i)=>{
+let g=line.querySelector(".geste")?.value||"";
+let c=line.querySelector(".cote")?.value||"";
+let com=line.querySelector(".commentaire")?.value||"";
+
+if(g){
+t+="GESTE "+(i+1)+" : "+g;
+if(c) t+=" ("+c+")";
+if(com) t+=" - "+com;
+t+="\n";
+}
+});
+
+t+="\n";
 
 /* VAS */
 let vas=[];
-
 if(vs.checked) vas.push("Maintien d’une ventilation spontanée pendant toute la durée du geste");
 if(ml.checked) vas.push("Mise en place d’un masque laryngé");
 if(ventilation.checked) vas.push("Ventilation au masque facile");
@@ -268,7 +382,7 @@ if(sonde.value) txt+=" - Sonde "+sonde.value;
 vas.push(txt);
 }
 
-t+="Voies aériennes supérieures : "+vas.join(" | ")+"\n";
+t+="VAS : "+vas.join(" | ")+"\n";
 
 resultat.innerText=t;
 }
