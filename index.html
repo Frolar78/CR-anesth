@@ -228,12 +228,13 @@ endo:{gestes:{},chirurgiens:["Dr Simon"]}
 
 // INIT
 function initSelects(){
+
 let chir=document.getElementById("chirurgien");
 let anes=document.getElementById("anesth");
 
-["Dr Martin","Dr Dupont","Dr Bernard","Dr Leroy"].forEach(c=>{
-chir.innerHTML+=`<option>${c}</option>`;
-anes.innerHTML+=`<option>${c}</option>`;
+// anesth
+anesthesistes.forEach(c=>{
+  anes.innerHTML += `<option>${c}</option>`;
 });
 }
 initSelects();
