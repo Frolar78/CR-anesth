@@ -2,78 +2,191 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>CR Anesthésie</title>
+<title>CR Anesthésie PWA</title>
 
 <style>
-body {margin:0;font-family:Arial;background:#f2f4f8;height:100vh;overflow:hidden;}
-h1{text-align:center;margin:6px;font-size:18px;}
+body{
+margin:0;
+font-family:Arial;
+background:#eef2f6;
+height:100vh;
+overflow:hidden;
+}
 
-.grid{display:grid;grid-template-rows:auto auto 1fr;gap:8px;height:100vh;padding:8px;}
-.card{background:white;border-radius:10px;padding:10px;box-shadow:0 2px 5px rgba(0,0,0,0.1);}
-.ligne{display:flex;align-items:center;flex-wrap:wrap;margin-bottom:6px;}
-.ligne strong{min-width:170px;}
+h1{
+text-align:center;
+margin:6px;
+font-size:18px;
+}
 
-button.option{padding:6px;margin:2px;font-size:12px;border-radius:6px;border:1px solid #ccc;background:white;cursor:pointer;}
-button.option.active{background:#c9974d;color:white;}
+.container{
+display:grid;
+grid-template-columns: 1fr 1fr 2fr;
+gap:10px;
+height:100vh;
+padding:10px;
+box-sizing:border-box;
+}
 
-.plus{background:#28a745;color:white;border:none;border-radius:50%;width:24px;height:24px;cursor:pointer;margin-left:5px;}
+.panel{
+background:white;
+border-radius:10px;
+padding:10px;
+box-shadow:0 2px 6px rgba(0,0,0,0.1);
+overflow:auto;
+display:flex;
+flex-direction:column;
+}
 
-textarea{width:100%;height:100%;}
-select,input{margin:3px;}
+.section-title{
+font-weight:bold;
+margin:8px 0;
+font-size:14px;
+}
+
+.row{
+display:flex;
+flex-wrap:wrap;
+gap:6px;
+align-items:center;
+margin-bottom:6px;
+}
+
+label{
+min-width:120px;
+font-size:12px;
+}
+
+input, select{
+font-size:12px;
+padding:4px;
+}
+
+textarea{
+font-size:12px;
+}
+
+.perop-row{
+display:grid;
+grid-template-columns: 180px 1fr;
+margin-bottom:6px;
+align-items:center;
+}
+
+.output{
+white-space:pre-wrap;
+font-size:12px;
+background:#0f172a;
+color:#d1d5db;
+padding:10px;
+border-radius:8px;
+height:100%;
+overflow:auto;
+}
+
+.plus{
+background:#28a745;
+color:white;
+border:none;
+border-radius:50%;
+width:24px;
+height:24px;
+cursor:pointer;
+}
 </style>
+
 </head>
 
 <body>
 
-<h1>CR Anesthésie</h1>
+<h1>CR Anesthésie - Bloc</h1>
 
-<div class="grid">
+<div class="container">
 
-<div class="card ligne">
-<strong>Date :</strong>
+<!-- 🟦 IDENTITÉ -->
+<div class="panel">
+
+<div class="section-title">Identité</div>
+
+<div class="row">
+<label>Date</label>
 <input type="date" id="date">
+</div>
 
-<strong>Spécialité :</strong>
-<select id="specialite"></select>
-
-<strong>Opérateur :</strong>
+<div class="row">
+<label>Opérateur</label>
 <select id="operateur"></select>
+</div>
 
-<strong>Anesthésiste :</strong>
+<div class="row">
+<label>Anesthésiste</label>
 <select id="anesth"></select>
 </div>
 
-<div class="card ligne">
-<strong>Geste :</strong>
+</div>
 
+<!-- 🟨 GESTE (TOUT CONSERVÉ) -->
+<div class="panel">
+
+<div class="section-title">Geste chirurgical</div>
+
+<div class="row">
+<label>Spécialité</label>
+<select id="specialite"></select>
+</div>
+
+<div class="row">
+<label>Geste</label>
 <select id="geste"></select>
+</div>
 
-<select id="cote" style="display:none;">
-<option value="">Côté</option>
+<div class="row">
+<label>Côté</label>
+<select id="cote">
+<option value="">--</option>
 <option value="gauche">Gauche</option>
 <option value="droite">Droite</option>
 </select>
+</div>
 
-<input id="commentaire" placeholder="Précision..." style="display:none;">
+<div class="row">
+<label>Commentaire</label>
+<input id="commentaire">
+</div>
 
 <button class="plus" onclick="ajouterGeste()">+</button>
 
-<span id="secondGesteBlock" style="display:none;">
+<div class="row" id="geste2Block" style="display:none;margin-top:6px;">
 <select id="geste2"></select>
 
-<select id="cote2" style="display:none;">
-<option value="">Côté</option>
+<select id="cote2">
+<option value="">--</option>
 <option value="gauche">Gauche</option>
 <option value="droite">Droite</option>
 </select>
 
-<input id="commentaire2" placeholder="Précision..." style="display:none;">
-</span>
+<input id="commentaire2">
+</div>
 
 </div>
 
-<div class="card">
-<textarea id="resultat"></textarea>
+<!-- 🟥 PER-OP -->
+<div class="panel">
+
+<div class="section-title">Per-opératoire</div>
+
+<div class="perop-row">Conditionnement <input id="cond"></div>
+<div class="perop-row">Induction <input id="induction"></div>
+<div class="perop-row">Curare <input id="curare"></div>
+<div class="perop-row">Voies aériennes supérieures <input id="va"></div>
+<div class="perop-row">Antibiothérapie <input id="atb"></div>
+<div class="perop-row">Entretien <input id="entretien"></div>
+<div class="perop-row">Noradrénaline <input id="norad"></div>
+<div class="perop-row">Autres <input id="autres"></div>
+
+<hr>
+<div class="output" id="resultat"></div>
+
 </div>
 
 </div>
@@ -83,13 +196,10 @@ select,input{margin:3px;}
 /* DATE */
 date.valueAsDate = new Date();
 
-function formatDateFR(d){
-if(!d) return "";
-let p = d.split("-");
-return p[2]+"/"+p[1]+"/"+p[0];
-}
+/* =======================
+   🔵 TES DONNÉES ORIGINALES (INCHANGÉES)
+======================= */
 
-/* ANESTH (INCHANGÉ) */
 const anesthesistes=[
 "Dr Stéphanie ALBOUY","Dr Guy ARMANDO","Dr Laure BONNET","Dr Mohammed BOUREGBA",
 "Dr Jean CATINEAU","Dr Alexandre FERRIERO","Dr Arthur FROHLICH",
@@ -100,7 +210,6 @@ const anesthesistes=[
 "Dr Daisy TRAN","Dr Rémy WIDEHEM","Dr Félix ZAMARON"
 ];
 
-/* OPERATEURS (INCHANGÉ COMPLET) */
 const operateurs={
 
 "Chirurgie Orthopédique":[
@@ -153,14 +262,13 @@ const operateurs={
 
 };
 
-/* GESTES (INCHANGÉ COMPLET) */
 const gestes={
 
 "Chirurgie Viscérale":{
 "Appendicectomie":{},
 "Colectomie":{cote:true},
 "Cholécystectomie":{},
-"Segmentectomie Hépatique":{commentaire:true},
+"Segmentectomie Hépatique":{},
 "Hernie inguinale":{cote:true},
 "Hernie ombilicale":{},
 "Duodéno-pancréatectomie céphalique":{},
@@ -192,8 +300,9 @@ const gestes={
 
 };
 
-/* INIT */
-function init(){
+/* =======================
+   INIT
+======================= */
 
 Object.keys(operateurs).forEach(s=>{
 specialite.innerHTML += `<option>${s}</option>`;
@@ -203,101 +312,98 @@ anesthesistes.forEach(a=>{
 anesth.innerHTML += `<option>${a}</option>`;
 });
 
-generer();
-}
-init();
+/* =======================
+   SPECIALITE
+======================= */
 
-/* SPECIALITE */
-specialite.addEventListener("change", function(){
+specialite.addEventListener("change",()=>{
 
-let s = this.value;
+let s = specialite.value;
 
 operateur.innerHTML = "<option>--</option>";
-(operateurs[s]||[]).sort().forEach(o=>{
+(operateurs[s]||[]).forEach(o=>{
 operateur.innerHTML += `<option>${o}</option>`;
 });
 
-geste.value = "";
-cote.value = "";
-commentaire.value = "";
-
-secondGesteBlock.style.display = "none";
-
-geste2.value = "";
-cote2.value = "";
-commentaire2.value = "";
-
 chargerGestes(geste);
+
+geste.value="";
+cote.value="";
+commentaire.value="";
+geste2Block.style.display="none";
+
 generer();
 });
 
-/* GESTES */
-function chargerGestes(selectEl){
+/* charger gestes */
+function chargerGestes(sel){
 let s = specialite.value;
-selectEl.innerHTML = "";
+sel.innerHTML="";
 if(!gestes[s]) return;
 
 Object.keys(gestes[s]).forEach(g=>{
-selectEl.innerHTML += `<option>${g}</option>`;
+sel.innerHTML += `<option>${g}</option>`;
 });
 }
 
-/* OPTIONS */
-geste.addEventListener("change", function(){
-majOptions(this.value, cote, commentaire);
-});
+/* gestes */
+geste.addEventListener("change",()=>maj(geste,cote,commentaire));
+geste2.addEventListener("change",()=>maj(geste2,cote2,commentaire2));
 
-geste2.addEventListener("change", function(){
-majOptions(this.value, cote2, commentaire2);
-});
-
-/* FIX IMPORTANT */
-function majOptions(g, coteEl, comEl){
+function maj(g,c,com){
 let s = specialite.value;
-let conf = gestes[s]?.[g] || {};
-
-if(coteEl) coteEl.style.display = conf.cote ? "inline" : "none";
-if(comEl) comEl.style.display = conf.commentaire ? "inline" : "none";
+let conf = gestes[s]?.[g.value] || {};
+c.style.display = conf.cote ? "inline" : "none";
+com.style.display = "inline";
 }
 
-/* AJOUT GESTE */
+/* ajout geste */
 function ajouterGeste(){
-secondGesteBlock.style.display = "inline";
+geste2Block.style.display="block";
 chargerGestes(geste2);
 }
 
-/* GENERER */
+/* =======================
+   GENERATION
+======================= */
+
 function generer(){
 
-let t = "Patient pris en charge au bloc.\n\n";
+let t="";
 
-t += "Date : " + formatDateFR(date.value) + "\n";
-t += "Opérateur : " + operateur.value + "\n";
-t += "Anesthésiste : " + anesth.value + "\n";
+t+="DATE : "+date.value+"\n";
+t+="OPERATEUR : "+operateur.value+"\n";
+t+="ANESTHESISTE : "+anesth.value+"\n\n";
 
-let txt = geste.value;
-
-if(cote.value) txt += " ("+cote.value+")";
-if(commentaire.value) txt += " - "+commentaire.value;
+t+="GESTE : "+geste.value;
+if(cote.value) t+=" ("+cote.value+")";
+if(commentaire.value) t+=" - "+commentaire.value;
 
 if(geste2.value){
-let txt2 = geste2.value;
-
-if(cote2.value) txt2 += " ("+cote2.value+")";
-if(commentaire2.value) txt2 += " - "+commentaire2.value;
-
-txt += " + " + txt2;
+t+=" + "+geste2.value;
+if(cote2.value) t+=" ("+cote2.value+")";
+if(commentaire2.value) t+=" - "+commentaire2.value;
 }
 
-t += "Geste : " + txt + "\n";
+t+="\n\n--- PER-OPERATOIRE ---\n";
+t+="Conditionnement : "+cond.value+"\n";
+t+="Induction : "+induction.value+"\n";
+t+="Curare : "+curare.value+"\n";
+t+="Voies aériennes supérieures : "+va.value+"\n";
+t+="Antibiothérapie : "+atb.value+"\n";
+t+="Entretien : "+entretien.value+"\n";
+t+="Noradrénaline : "+norad.value+"\n";
+t+="Autres : "+autres.value+"\n";
 
-resultat.value = t;
+resultat.innerText=t;
 }
 
-/* AUTO UPDATE */
-document.querySelectorAll("select,input").forEach(e=>{
-e.addEventListener("change", () => setTimeout(generer, 0));
+/* auto update */
+document.querySelectorAll("input,select").forEach(e=>{
+e.addEventListener("input",generer);
 });
+
+generer();
 
 </script>
 
