@@ -107,6 +107,7 @@ font-family:monospace;
 <label>Anesthésiste</label>
 <select id="anesth"></select>
 </div>
+
 </div>
 
 <!-- GESTE -->
@@ -131,6 +132,7 @@ font-family:monospace;
 <label>Commentaire</label>
 <input id="commentaire">
 </div>
+
 </div>
 
 <!-- PEROP -->
@@ -159,7 +161,7 @@ font-family:monospace;
 
 <script>
 
-/* DATE */
+/* ================= DATE ================= */
 function formatDateFR(d){
 if(!d) return "";
 let [y,m,day]=d.split("-");
@@ -167,7 +169,7 @@ return day+"/"+m+"/"+y;
 }
 date.valueAsDate=new Date();
 
-/* ================= DATA COMPLET ================= */
+/* ================= DONNÉES ORIGINALES RESTAURÉES ================= */
 
 const anesthesistes=[
 "Dr Stéphanie ALBOUY","Dr Guy ARMANDO","Dr Laure BONNET","Dr Mohammed BOUREGBA",
@@ -180,24 +182,93 @@ const anesthesistes=[
 ];
 
 const operateurs={
+
 "Chirurgie Orthopédique":[
 "Dr Hugo DARMANTE","Dr Matthieu GHREA","Dr Nicolas GUILLOT","Dr Tristan LASCAR"
 ],
+
 "Chirurgie Viscérale":[
 "Dr Adolfo GAVELLI","Dr Anne DUBOIS-VERDIER","Dr Anna MARMORALE",
 "Dr Hubert PERRIN","Dr Nicoletta AMBROSIANI","Pr Fabrizio PANARO"
+],
+
+"Urologie":[
+"Dr Aurélie FLOCH","Dr Maher KECHAOU","Dr Patrick-Julien TREACY",
+"Dr Rafaelle CURSIO","Dr Xavier CARPENTIER"
+],
+
+"Endoscopie Digestive":[
+"Dr Alexandre CHARACHON","Dr Daniela AGREFILO",
+"Dr Jean-François DEMARQUAY","Dr Juliette LAVEYSSIERE","Dr Luc DIEZ"
+],
+
+"Chirurgie Gynécologique":[
+"Dr Abdi BAFGHI","Dr Guillaume BENOIST","Dr Julia AUMIPHIN",
+"Dr Reda DJAFER","Dr Wafaa EL LAAMOUCHI","Pr Bruno CARBONNE"
+],
+
+"Chirurgie ORL":[
+"Dr Diane LAZARD","Dr Riad BERGUIGA","Dr Sandrine CANIVET"
+],
+
+"Radiologie Interventionnelle":[
+"Dr Federico TORRE","Dr Giuseppe GUZZARDI"
+],
+
+"Cardiologie Interventionnelle":[
+"Dr Gabriel LATCU","Dr Denis GATY"
+],
+
+"Chirurgie Maxillo-Faciale":[
+"Dr Albert VAN HOVE"
+],
+
+"Endoscopie Bronchique":[
+"Dr Cécile MAINCENT","Dr Constance BLANDIN"
+],
+
+"Chirurgie Esthétique":[
+"Dr Marie-Christine MISSANA","Dr Abdi BAFGHI"
 ]
+
 };
 
 const gestes={
+
 "Chirurgie Orthopédique":{
 "Prothèse Totale de Hanche":{},
-"Prothèse Totale de Genou":{}
+"Prothèse Totale de Genou":{},
+"Arthroscopie de Genou":{},
+"Arthroscopie d’épaule":{},
+"Canal carpien":{},
+"Prothèse totale d’épaule":{},
+"Clou gamma":{},
+"Plaque poignet":{},
+"Plaque cheville":{}
 },
+
 "Chirurgie Viscérale":{
 "Appendicectomie":{},
-"Colectomie":{}
+"Colectomie":{},
+"Cholécystectomie":{},
+"Segmentectomie Hépatique":{},
+"Hernie inguinale":{},
+"Hernie ombilicale":{},
+"Duodéno-pancréatectomie céphalique":{},
+"Oesophagectomie Lewis-Santy":{}
+},
+
+"Endoscopie Digestive":{
+"Gastroscopie":{},
+"Gastroscopie + Coloscopie":{},
+"Coloscopie":{},
+"ERCP":{},
+"Echo-endoscopie":{},
+"Mucosectomie":{},
+"POEM":{},
+"Dissection sous-muqueuse":{}
 }
+
 };
 
 /* ================= INIT ================= */
@@ -207,17 +278,17 @@ const operateur=document.getElementById("operateur");
 const geste=document.getElementById("geste");
 const anesth=document.getElementById("anesth");
 
-/* spécialités */
+/* SPECIALITES */
 Object.keys(operateurs).forEach(s=>{
 specialite.innerHTML+=`<option>${s}</option>`;
 });
 
-/* anesth */
+/* ANESTHESISTES */
 anesthesistes.forEach(a=>{
 anesth.innerHTML+=`<option>${a}</option>`;
 });
 
-/* ================= FONCTIONS ================= */
+/* ================= MAJ MENUS ================= */
 
 function majOperateurs(){
 let s=specialite.value;
@@ -235,14 +306,14 @@ geste.innerHTML+=`<option>${g}</option>`;
 });
 }
 
-/* EVENTS */
 specialite.addEventListener("change",()=>{
 majOperateurs();
 majGestes();
 generer();
 });
 
-/* CONDITIONNEMENT */
+/* ================= CONDITIONNEMENT ================= */
+
 function conditionnementText(){
 
 let c=[];
@@ -268,7 +339,8 @@ c.push("Monitorage neuromusculaire TOF en place");
 return c;
 }
 
-/* GENERATION */
+/* ================= GENERATION ================= */
+
 function generer(){
 
 let t="";
@@ -282,6 +354,7 @@ if(cote.value) t+=" ("+cote.value+")";
 if(commentaire.value) t+=" - "+commentaire.value;
 
 t+="\n\nConditionnement :\n";
+
 conditionnementText().forEach(x=>{
 t+="- "+x+"\n";
 });
@@ -294,7 +367,7 @@ document.querySelectorAll("input,select").forEach(e=>{
 e.addEventListener("input",generer);
 });
 
-/* INIT CALLS */
+/* INIT */
 majOperateurs();
 majGestes();
 generer();
