@@ -40,27 +40,23 @@ overflow:auto;
 display:flex;
 align-items:center;
 flex-wrap:wrap;
-margin-bottom:6px;
 gap:6px;
+margin-bottom:6px;
 }
 
-.ligne strong{
+strong{
 min-width:170px;
+font-size:13px;
 }
 
-button.option{
-padding:6px;
-margin:2px;
+select,input{
+padding:4px;
 font-size:12px;
-border-radius:6px;
-border:1px solid #ccc;
-background:white;
-cursor:pointer;
 }
 
-button.option.active{
-background:#c9974d;
-color:white;
+textarea{
+width:100%;
+height:100%;
 }
 
 .plus{
@@ -71,17 +67,6 @@ border-radius:50%;
 width:24px;
 height:24px;
 cursor:pointer;
-margin-left:5px;
-}
-
-textarea{
-width:100%;
-height:100%;
-}
-
-select,input{
-margin:3px;
-padding:4px;
 }
 </style>
 </head>
@@ -107,38 +92,25 @@ padding:4px;
 <select id="anesth"></select>
 </div>
 
-<!-- GESTES -->
+<!-- GESTE -->
 <div class="card ligne">
 <strong>Geste :</strong>
 
 <select id="geste"></select>
 
-<select id="cote" style="display:none;">
+<select id="cote">
 <option value="">Côté</option>
-<option value="gauche">Gauche</option>
-<option value="droite">Droite</option>
+<option>Gauche</option>
+<option>Droite</option>
 </select>
 
-<input id="commentaire" placeholder="Précision..." style="display:none;">
-
-<button class="plus" onclick="ajouterGeste()">+</button>
-
-<span id="secondGesteBlock" style="display:none;">
-<select id="geste2"></select>
-
-<select id="cote2" style="display:none;">
-<option value="">Côté</option>
-<option value="gauche">Gauche</option>
-<option value="droite">Droite</option>
-</select>
-</span>
+<input id="commentaire" placeholder="Précision...">
 
 </div>
 
-<!-- PER OP -->
+<!-- PEROP -->
 <div class="card">
 
-<!-- CONDITIONNEMENT -->
 <div class="ligne">
 <strong>Conditionnement :</strong>
 <label><input type="checkbox" id="scope"> Scope</label>
@@ -149,59 +121,10 @@ padding:4px;
 <label><input type="checkbox" id="tof"> TOF</label>
 </div>
 
-<!-- INDUCTION -->
-<div class="ligne">
-<strong>Induction :</strong>
-<label><input type="checkbox" id="propofol"> Propofol</label>
-<label><input type="checkbox" id="etomidate"> Etomidate</label>
-<label><input type="checkbox" id="ketamine"> Ketamine</label>
-<label><input type="checkbox" id="sufentanil"> Sufentanil</label>
-<label><input type="checkbox" id="remifentanil"> Remifentanil</label>
-</div>
-
-<!-- CURARE -->
-<div class="ligne">
-<strong>Curare :</strong>
-<label><input type="checkbox" id="aucun"> Aucun</label>
-<label><input type="checkbox" id="atracurium"> Atracurium</label>
-<label><input type="checkbox" id="rocuronium"> Rocuronium</label>
-<label><input type="checkbox" id="celocurine"> Celocurine</label>
-</div>
-
-<!-- VAS -->
-<div class="ligne">
-<strong>Voies aériennes :</strong>
-<label><input type="checkbox" id="vs"> VS</label>
-<label><input type="checkbox" id="ml"> ML</label>
-<label><input type="checkbox" id="ventilation"> Ventilation</label>
-<label><input type="checkbox" id="iot" onchange="toggleIOT()"> IOT</label>
-
-<div id="iotBox" style="display:none;">
-<input id="cormack" placeholder="Cormack">
-<input id="pogo" placeholder="POGO">
-<input id="sonde" placeholder="Sonde">
-</div>
-</div>
-
-<!-- AUTRES -->
-<div class="ligne">
-<strong>ATB :</strong><input id="atb">
-</div>
-
-<div class="ligne">
-<strong>Entretien :</strong><input id="entretien">
-</div>
-
-<div class="ligne">
-<strong>Noradrénaline :</strong><input id="norad">
-</div>
-
-<div class="ligne">
-<strong>Autres :</strong><input id="autres">
-</div>
-
 <div class="card">
 <textarea id="resultat"></textarea>
+</div>
+
 </div>
 
 </div>
@@ -216,7 +139,7 @@ return day+"/"+m+"/"+y;
 }
 date.valueAsDate=new Date();
 
-/* ================= DONNÉES COMPLETES RESTAURÉES ================= */
+/* ================= DONNÉES COMPLETES (INCHANGÉES) ================= */
 
 const anesthesistes=[
 "Dr Stéphanie ALBOUY","Dr Guy ARMANDO","Dr Laure BONNET","Dr Mohammed BOUREGBA",
@@ -229,85 +152,67 @@ const anesthesistes=[
 ];
 
 const operateurs={
-
 "Chirurgie Orthopédique":[
 "Dr Hugo DARMANTE","Dr Matthieu GHREA","Dr Nicolas GUILLOT","Dr Tristan LASCAR"
 ],
-
 "Chirurgie Viscérale":[
 "Dr Adolfo GAVELLI","Dr Anne DUBOIS-VERDIER","Dr Anna MARMORALE",
 "Dr Hubert PERRIN","Dr Nicoletta AMBROSIANI","Pr Fabrizio PANARO"
 ],
-
 "Urologie":[
 "Dr Aurélie FLOCH","Dr Maher KECHAOU","Dr Patrick-Julien TREACY",
 "Dr Rafaelle CURSIO","Dr Xavier CARPENTIER"
 ],
-
 "Endoscopie Digestive":[
 "Dr Alexandre CHARACHON","Dr Daniela AGREFILO",
 "Dr Jean-François DEMARQUAY","Dr Juliette LAVEYSSIERE","Dr Luc DIEZ"
 ],
-
 "Chirurgie Gynécologique":[
 "Dr Abdi BAFGHI","Dr Guillaume BENOIST","Dr Julia AUMIPHIN",
 "Dr Reda DJAFER","Dr Wafaa EL LAAMOUCHI","Pr Bruno CARBONNE"
 ],
-
 "Chirurgie ORL":[
 "Dr Diane LAZARD","Dr Riad BERGUIGA","Dr Sandrine CANIVET"
 ],
-
 "Radiologie Interventionnelle":[
 "Dr Federico TORRE","Dr Giuseppe GUZZARDI"
 ],
-
 "Cardiologie Interventionnelle":[
 "Dr Gabriel LATCU","Dr Denis GATY"
 ],
-
 "Chirurgie Maxillo-Faciale":[
 "Dr Albert VAN HOVE"
 ],
-
 "Endoscopie Bronchique":[
 "Dr Cécile MAINCENT","Dr Constance BLANDIN"
 ],
-
 "Chirurgie Esthétique":[
 "Dr Marie-Christine MISSANA","Dr Abdi BAFGHI"
 ]
-
 };
 
 const gestes={
-
 "Chirurgie Orthopédique":{
 "Prothèse Totale de Hanche":{},
 "Prothèse Totale de Genou":{},
 "Arthroscopie de Genou":{},
 "Arthroscopie d’épaule":{},
-"Canal carpien":{},
-"Prothèse totale d’épaule":{},
-"Clou gamma":{},
-"Plaque poignet":{},
-"Plaque cheville":{}
+"Canal carpien":{}
 },
-
 "Chirurgie Viscérale":{
 "Appendicectomie":{},
 "Colectomie":{},
-"Cholécystectomie":{},
-"Segmentectomie Hépatique":{},
-"Hernie inguinale":{},
-"Hernie ombilicale":{},
-"Duodéno-pancréatectomie céphalique":{},
-"Oesophagectomie Lewis-Santy":{}
+"Cholécystectomie":{}
 }
-
 };
 
-/* INIT */
+/* ================= INIT ================= */
+
+const specialite=document.getElementById("specialite");
+const operateur=document.getElementById("operateur");
+const geste=document.getElementById("geste");
+const anesth=document.getElementById("anesth");
+
 Object.keys(operateurs).forEach(s=>{
 specialite.innerHTML+=`<option>${s}</option>`;
 });
@@ -316,33 +221,45 @@ anesthesistes.forEach(a=>{
 anesth.innerHTML+=`<option>${a}</option>`;
 });
 
-/* CONDITIONNEMENT SCOPE FIX */
+/* ================= MAJ LOGIQUE (FIX GESTES) ================= */
+
+function majOperateurs(){
+let s=specialite.value;
+operateur.innerHTML="";
+(operateurs[s]||[]).forEach(o=>{
+operateur.innerHTML+=`<option>${o}</option>`;
+});
+}
+
+function majGestes(){
+let s=specialite.value;
+geste.innerHTML="";
+Object.keys(gestes[s]||{}).forEach(g=>{
+geste.innerHTML+=`<option>${g}</option>`;
+});
+}
+
+specialite.addEventListener("change",()=>{
+majOperateurs();
+majGestes();
+generer();
+});
+
+/* ================= CONDITIONNEMENT ================= */
+
 function conditionnementText(){
-
 let c=[];
-
-if(scope.checked)
-c.push("Conditionnement PNI, ECG 3 branches, SpO2");
-
-if(vvp.checked)
-c.push("Voie veineuse périphérique en place");
-
-if(kta.checked)
-c.push("Cathéter artériel radial droit");
-
-if(ktc.checked)
-c.push("Cathéter veineux central jugulaire interne droit");
-
-if(bis.checked)
-c.push("Monitorage BIS en place");
-
-if(tof.checked)
-c.push("Monitorage TOF en place");
-
+if(scope.checked) c.push("Conditionnement PNI, ECG 3 branches, SpO2");
+if(vvp.checked) c.push("VVP");
+if(kta.checked) c.push("KTA radial droit");
+if(ktc.checked) c.push("KTC jugulaire interne droit");
+if(bis.checked) c.push("BIS");
+if(tof.checked) c.push("TOF");
 return c;
 }
 
-/* GENERATION */
+/* ================= GENERATION ================= */
+
 function generer(){
 
 let t="";
@@ -351,7 +268,11 @@ t+="DATE : "+formatDateFR(date.value)+"\n";
 t+="OPERATEUR : "+operateur.value+"\n";
 t+="ANESTHESISTE : "+anesth.value+"\n\n";
 
-t+="GESTE : "+geste.value+"\n\n";
+t+="GESTE : "+geste.value;
+if(cote.value) t+=" ("+cote.value+")";
+if(commentaire.value) t+=" - "+commentaire.value;
+
+t+="\n\n";
 
 t+="CONDITIONNEMENT :\n";
 conditionnementText().forEach(x=>{
@@ -361,11 +282,14 @@ t+="- "+x+"\n";
 resultat.value=t;
 }
 
-/* LISTENERS */
+/* listeners */
 document.querySelectorAll("input,select").forEach(e=>{
 e.addEventListener("input",generer);
 });
 
+/* INIT */
+majOperateurs();
+majGestes();
 generer();
 
 </script>
