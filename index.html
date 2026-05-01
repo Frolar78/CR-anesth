@@ -5,51 +5,35 @@
 <title>CR Anesthésie</title>
 
 <style>
-body {
-  margin: 0;
-  font-family: Arial;
-  background: #f2f4f8;
-  height: 100vh;
-  overflow: hidden;
+body {margin:0;font-family:Arial;background:#f2f4f8;height:100vh;overflow:hidden;}
+h1{text-align:center;margin:6px;font-size:18px;}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+grid-template-rows:1fr 1fr;
+gap:8px;
+height:calc(100vh - 45px);
+padding:8px;
 }
 
-h1 { text-align:center; margin:6px; font-size:18px; }
-
-.grid {
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  grid-template-rows:1fr 1fr;
-  gap:8px;
-  height:calc(100vh - 45px);
-  padding:8px;
+.card{
+background:white;
+border-radius:10px;
+padding:8px;
+box-shadow:0 2px 5px rgba(0,0,0,0.1);
+overflow:auto;
 }
 
-.card {
-  background:white;
-  border-radius:10px;
-  padding:8px;
-  box-shadow:0 2px 5px rgba(0,0,0,0.1);
-  overflow:auto;
+button.option{
+padding:6px;margin:2px;font-size:11px;
+border-radius:6px;border:1px solid #ccc;
+background:white;cursor:pointer;
 }
+button.option.active{background:#007bff;color:white;}
 
-button.option {
-  padding:6px;
-  margin:2px;
-  font-size:11px;
-  border-radius:6px;
-  border:1px solid #ccc;
-  background:white;
-  cursor:pointer;
-}
-
-button.option.active {
-  background:#007bff;
-  color:white;
-}
-
-textarea { width:100%; height:100%; }
-
-select,input { width:100%; margin-bottom:5px; }
+textarea{width:100%;height:100%;font-size:13px;}
+select,input{width:100%;margin-bottom:5px;}
 </style>
 </head>
 
@@ -75,13 +59,13 @@ select,input { width:100%; margin-bottom:5px; }
 <select id="specialite">
 <option value="">--</option>
 <option value="ortho">Orthopédie</option>
+<option value="visc">Viscérale</option>
+<option value="uro">Urologie</option>
+<option value="gyneco">Gynécologie</option>
+<option value="endo">Endoscopie</option>
 </select>
-
-<h3>Geste</h3>
-<select id="geste"></select>
 </div>
 
-<!-- ANESTHESIE -->
 <div class="card">
 
 <h3>Conditionnement</h3>
@@ -92,7 +76,7 @@ select,input { width:100%; margin-bottom:5px; }
 <select id="ktaSite">
 <option value="">Site</option>
 <option value="radial">Radial</option>
-<option value="femoral">Fémoral</option>
+<option value="fémoral">Fémoral</option>
 </select>
 
 <select id="ktaCote">
@@ -104,11 +88,14 @@ select,input { width:100%; margin-bottom:5px; }
 
 <h3>Induction</h3>
 <button class="option" onclick="toggle(this)">Propofol</button>
+<button class="option" onclick="toggle(this)">Etomidate</button>
 <button class="option" onclick="toggle(this)">Remifentanil</button>
+<button class="option" onclick="toggle(this)">Sufentanil</button>
+<button class="option" onclick="toggle(this)">Ketamine</button>
 
 </div>
 
-<div class="card" style="grid-column:span 3;">
+<div class="card" style="grid-column: span 3;">
 <textarea id="resultat"></textarea>
 </div>
 
@@ -116,24 +103,43 @@ select,input { width:100%; margin-bottom:5px; }
 
 <script>
 
-/* DATE AUTO */
+/* DATE */
 document.getElementById("date").valueAsDate = new Date();
 
-/* FORMAT DATE FR */
 function formatDateFR(d){
 if(!d) return "";
-let parts=d.split("-");
-return parts[2]+"/"+parts[1]+"/"+parts[0];
+let p=d.split("-");
+return p[2]+"/"+p[1]+"/"+p[0];
 }
 
-/* ANESTH */
-const anesthesistes=["Dr A","Dr B"];
+/* ANESTHESISTES */
+const anesthesistes = [
+"Dr Stéphanie ALBOUY","Dr Guy ARMANDO","Dr Laure BONNET","Dr Mohammed BOUREGBA",
+"Dr Jean CATINEAU","Dr Alexandre FERRIERO","Dr Arthur FROHLICH",
+"Dr Jean-Philippe GUERIN","Dr Sébastien GHIGLIONE","Dr Léa LEY-GHIGLIONE",
+"Dr Lucile LEVASSEUR","Dr Riyad MENADE","Dr Nicolas OPPRECHT",
+"Dr Nicolas PARTOUCHE","Pr Bertrand PRUNET","Dr Gildas ROUSSEAU",
+"Dr Nicolo SALA","Dr Mathilde SEVERAC","Dr Wajdi SULTAN",
+"Dr Daisy TRAN","Dr Rémy WIDEHEM","Dr Félix ZAMARON"
+];
+
+/* CHIRURGIENS */
+const chirurgiens = {
+
+ortho:["Dr Hugo DARMANTE","Dr Matthieu GHREA","Dr Nicolas GUILLOT","Dr Tristan LASCAR"].sort(),
+visc:["Dr Adolfo GAVELLI","Dr Anne DUBOIS-VERDIER","Dr Anna MARMORALE","Dr Hubert PERRIN","Dr Nicoletta AMBROSIANI","Pr Fabrizio PANARO"].sort(),
+uro:["Dr Aurélie FLOCH","Dr Maher KECHAOU","Dr Patrick-Julien TREACY","Dr Rafaelle CURSIO","Dr Xavier CARPENTIER"].sort(),
+endo:["Dr Alexandre CHARACHON","Dr Daniela AGREFILO","Dr Jean-François DEMARQUAY","Dr Juliette LAVEYSSIERE","Dr Luc DIEZ"].sort(),
+gyneco:["Dr Abdi BAFGHI","Dr Guillaume BENOIST","Dr Julia AUMIPHIN","Dr Reda DJAFER","Dr Wafaa EL LAAMOUCHI","Pr Bruno CARBONNE"].sort()
+
+};
 
 /* INIT */
 function init(){
 let a=document.getElementById("anesth");
+
 let empty=document.createElement("option");
-empty.text="--";
+empty.text="-- Sélectionner --";
 empty.selected=true;
 a.add(empty);
 
@@ -142,6 +148,28 @@ a.innerHTML+=`<option>${n}</option>`;
 });
 }
 init();
+
+/* SPECIALITE */
+document.getElementById("specialite").addEventListener("change",function(){
+
+let spec=this.value;
+let chir=document.getElementById("chirurgien");
+
+chir.innerHTML="";
+
+let empty=document.createElement("option");
+empty.text="-- Sélectionner --";
+empty.selected=true;
+chir.add(empty);
+
+if(!chirurgiens[spec]) return;
+
+chirurgiens[spec].forEach(c=>{
+chir.innerHTML+=`<option>${c}</option>`;
+});
+
+generer();
+});
 
 /* TOGGLE */
 function toggle(b){
@@ -162,11 +190,10 @@ function generer(){
 
 let t="Patient pris en charge au bloc.\n\n";
 
-/* DATE FR */
-let d=formatDateFR(document.getElementById("date").value);
-t+="Date : "+d+"\n";
+t+="Date : "+formatDateFR(date.value)+"\n";
+t+="Chirurgien : "+chirurgien.value+"\n";
+t+="Anesthésiste : "+anesth.value+"\n";
 
-/* CONDITIONNEMENT */
 let cond=[];
 
 /* Scope */
@@ -176,10 +203,10 @@ cond.push("Mise en place PNI, ECG 3 branches, SpO2");
 }
 
 /* KTA */
-let ktaBtn=[...document.querySelectorAll(".option.active")]
+let kta=[...document.querySelectorAll(".option.active")]
 .find(b=>b.innerText==="KTA");
 
-if(ktaBtn){
+if(kta){
 let site=document.getElementById("ktaSite").value;
 let cote=document.getElementById("ktaCote").value;
 
