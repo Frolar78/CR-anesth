@@ -1,13 +1,146 @@
-<!-- IDENTIQUE AU CODE PRECEDENT JUSQU'À PER-OP, ON CORRIGE UNIQUEMENT CETTE PARTIE -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>CR Anesthésie</title>
 
-<!-- PEROP -->
-<div class="panel">
-<div class="section-title">Per-opératoire</div>
+<style>
+body{
+margin:0;
+font-family:Arial;
+background:#f2f4f8;
+height:100vh;
+overflow:hidden;
+}
+
+h1{
+text-align:center;
+margin:6px;
+font-size:18px;
+}
+
+.grid{
+display:grid;
+grid-template-rows:auto auto 1fr;
+gap:8px;
+height:100vh;
+padding:8px;
+box-sizing:border-box;
+}
+
+.card{
+background:white;
+border-radius:10px;
+padding:10px;
+box-shadow:0 2px 5px rgba(0,0,0,0.1);
+overflow:auto;
+}
+
+.ligne{
+display:flex;
+align-items:center;
+flex-wrap:wrap;
+margin-bottom:6px;
+gap:6px;
+}
+
+.ligne strong{
+min-width:170px;
+}
+
+button.option{
+padding:6px;
+margin:2px;
+font-size:12px;
+border-radius:6px;
+border:1px solid #ccc;
+background:white;
+cursor:pointer;
+}
+
+button.option.active{
+background:#c9974d;
+color:white;
+}
+
+.plus{
+background:#28a745;
+color:white;
+border:none;
+border-radius:50%;
+width:24px;
+height:24px;
+cursor:pointer;
+margin-left:5px;
+}
+
+textarea{
+width:100%;
+height:100%;
+}
+
+select,input{
+margin:3px;
+padding:4px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>CR Anesthésie</h1>
+
+<div class="grid">
+
+<!-- IDENTITE -->
+<div class="card ligne">
+<strong>Date :</strong>
+<input type="date" id="date">
+
+<strong>Spécialité :</strong>
+<select id="specialite"></select>
+
+<strong>Opérateur :</strong>
+<select id="operateur"></select>
+
+<strong>Anesthésiste :</strong>
+<select id="anesth"></select>
+</div>
+
+<!-- GESTES -->
+<div class="card ligne">
+<strong>Geste :</strong>
+
+<select id="geste"></select>
+
+<select id="cote" style="display:none;">
+<option value="">Côté</option>
+<option value="gauche">Gauche</option>
+<option value="droite">Droite</option>
+</select>
+
+<input id="commentaire" placeholder="Précision..." style="display:none;">
+
+<button class="plus" onclick="ajouterGeste()">+</button>
+
+<span id="secondGesteBlock" style="display:none;">
+<select id="geste2"></select>
+
+<select id="cote2" style="display:none;">
+<option value="">Côté</option>
+<option value="gauche">Gauche</option>
+<option value="droite">Droite</option>
+</select>
+</span>
+
+</div>
+
+<!-- PER OP -->
+<div class="card">
 
 <!-- CONDITIONNEMENT -->
-<div class="row">
-<label>Conditionnement</label>
-<div>
+<div class="ligne">
+<strong>Conditionnement :</strong>
 <label><input type="checkbox" id="scope"> Scope</label>
 <label><input type="checkbox" id="vvp"> VVP</label>
 <label><input type="checkbox" id="kta"> KTA</label>
@@ -15,67 +148,227 @@
 <label><input type="checkbox" id="bis"> BIS</label>
 <label><input type="checkbox" id="tof"> TOF</label>
 </div>
-</div>
 
 <!-- INDUCTION -->
-<div class="row">
-<label>Induction</label>
-<div>
+<div class="ligne">
+<strong>Induction :</strong>
 <label><input type="checkbox" id="propofol"> Propofol</label>
 <label><input type="checkbox" id="etomidate"> Etomidate</label>
 <label><input type="checkbox" id="ketamine"> Ketamine</label>
 <label><input type="checkbox" id="sufentanil"> Sufentanil</label>
 <label><input type="checkbox" id="remifentanil"> Remifentanil</label>
 </div>
-</div>
 
 <!-- CURARE -->
-<div class="row">
-<label>Curare</label>
-<div>
-<label><input type="checkbox" id="curare_aucun"> Aucun</label>
+<div class="ligne">
+<strong>Curare :</strong>
+<label><input type="checkbox" id="aucun"> Aucun</label>
 <label><input type="checkbox" id="atracurium"> Atracurium</label>
 <label><input type="checkbox" id="rocuronium"> Rocuronium</label>
 <label><input type="checkbox" id="celocurine"> Celocurine</label>
 </div>
-</div>
 
 <!-- VAS -->
-<div class="row">
-<label>Voies aériennes supérieures</label>
-<div>
+<div class="ligne">
+<strong>Voies aériennes :</strong>
 <label><input type="checkbox" id="vs"> VS</label>
 <label><input type="checkbox" id="ml"> ML</label>
 <label><input type="checkbox" id="ventilation"> Ventilation</label>
 <label><input type="checkbox" id="iot" onchange="toggleIOT()"> IOT</label>
 
-<div id="iotBox" style="display:none;margin-top:6px;">
+<div id="iotBox" style="display:none;">
 <input id="cormack" placeholder="Cormack">
 <input id="pogo" placeholder="POGO">
-<input id="sonde" placeholder="Sonde (taille)">
-</div>
+<input id="sonde" placeholder="Sonde">
 </div>
 </div>
 
-<!-- AUTRES LIGNES -->
-<div class="row">
-<label>Antibiothérapie</label>
-<input id="atb">
+<!-- AUTRES -->
+<div class="ligne">
+<strong>ATB :</strong><input id="atb">
 </div>
 
-<div class="row">
-<label>Entretien</label>
-<input id="entretien">
+<div class="ligne">
+<strong>Entretien :</strong><input id="entretien">
 </div>
 
-<div class="row">
-<label>Noradrénaline</label>
-<input id="norad">
+<div class="ligne">
+<strong>Noradrénaline :</strong><input id="norad">
 </div>
 
-<div class="row">
-<label>Autres</label>
-<input id="autres">
+<div class="ligne">
+<strong>Autres :</strong><input id="autres">
+</div>
+
+<div class="card">
+<textarea id="resultat"></textarea>
 </div>
 
 </div>
+
+<script>
+
+/* DATE */
+function formatDateFR(d){
+if(!d) return "";
+let [y,m,day]=d.split("-");
+return day+"/"+m+"/"+y;
+}
+date.valueAsDate=new Date();
+
+/* ================= DONNÉES COMPLETES RESTAURÉES ================= */
+
+const anesthesistes=[
+"Dr Stéphanie ALBOUY","Dr Guy ARMANDO","Dr Laure BONNET","Dr Mohammed BOUREGBA",
+"Dr Jean CATINEAU","Dr Alexandre FERRIERO","Dr Arthur FROHLICH",
+"Dr Jean-Philippe GUERIN","Dr Sébastien GHIGLIONE","Dr Léa LEY-GHIGLIONE",
+"Dr Lucile LEVASSEUR","Dr Riyad MENADE","Dr Nicolas OPPRECHT",
+"Dr Nicolas PARTOUCHE","Pr Bertrand PRUNET","Dr Gildas ROUSSEAU",
+"Dr Nicolo SALA","Dr Mathilde SEVERAC","Dr Wajdi SULTAN",
+"Dr Daisy TRAN","Dr Rémy WIDEHEM","Dr Félix ZAMARON"
+];
+
+const operateurs={
+
+"Chirurgie Orthopédique":[
+"Dr Hugo DARMANTE","Dr Matthieu GHREA","Dr Nicolas GUILLOT","Dr Tristan LASCAR"
+],
+
+"Chirurgie Viscérale":[
+"Dr Adolfo GAVELLI","Dr Anne DUBOIS-VERDIER","Dr Anna MARMORALE",
+"Dr Hubert PERRIN","Dr Nicoletta AMBROSIANI","Pr Fabrizio PANARO"
+],
+
+"Urologie":[
+"Dr Aurélie FLOCH","Dr Maher KECHAOU","Dr Patrick-Julien TREACY",
+"Dr Rafaelle CURSIO","Dr Xavier CARPENTIER"
+],
+
+"Endoscopie Digestive":[
+"Dr Alexandre CHARACHON","Dr Daniela AGREFILO",
+"Dr Jean-François DEMARQUAY","Dr Juliette LAVEYSSIERE","Dr Luc DIEZ"
+],
+
+"Chirurgie Gynécologique":[
+"Dr Abdi BAFGHI","Dr Guillaume BENOIST","Dr Julia AUMIPHIN",
+"Dr Reda DJAFER","Dr Wafaa EL LAAMOUCHI","Pr Bruno CARBONNE"
+],
+
+"Chirurgie ORL":[
+"Dr Diane LAZARD","Dr Riad BERGUIGA","Dr Sandrine CANIVET"
+],
+
+"Radiologie Interventionnelle":[
+"Dr Federico TORRE","Dr Giuseppe GUZZARDI"
+],
+
+"Cardiologie Interventionnelle":[
+"Dr Gabriel LATCU","Dr Denis GATY"
+],
+
+"Chirurgie Maxillo-Faciale":[
+"Dr Albert VAN HOVE"
+],
+
+"Endoscopie Bronchique":[
+"Dr Cécile MAINCENT","Dr Constance BLANDIN"
+],
+
+"Chirurgie Esthétique":[
+"Dr Marie-Christine MISSANA","Dr Abdi BAFGHI"
+]
+
+};
+
+const gestes={
+
+"Chirurgie Orthopédique":{
+"Prothèse Totale de Hanche":{},
+"Prothèse Totale de Genou":{},
+"Arthroscopie de Genou":{},
+"Arthroscopie d’épaule":{},
+"Canal carpien":{},
+"Prothèse totale d’épaule":{},
+"Clou gamma":{},
+"Plaque poignet":{},
+"Plaque cheville":{}
+},
+
+"Chirurgie Viscérale":{
+"Appendicectomie":{},
+"Colectomie":{},
+"Cholécystectomie":{},
+"Segmentectomie Hépatique":{},
+"Hernie inguinale":{},
+"Hernie ombilicale":{},
+"Duodéno-pancréatectomie céphalique":{},
+"Oesophagectomie Lewis-Santy":{}
+}
+
+};
+
+/* INIT */
+Object.keys(operateurs).forEach(s=>{
+specialite.innerHTML+=`<option>${s}</option>`;
+});
+
+anesthesistes.forEach(a=>{
+anesth.innerHTML+=`<option>${a}</option>`;
+});
+
+/* CONDITIONNEMENT SCOPE FIX */
+function conditionnementText(){
+
+let c=[];
+
+if(scope.checked)
+c.push("Conditionnement PNI, ECG 3 branches, SpO2");
+
+if(vvp.checked)
+c.push("Voie veineuse périphérique en place");
+
+if(kta.checked)
+c.push("Cathéter artériel radial droit");
+
+if(ktc.checked)
+c.push("Cathéter veineux central jugulaire interne droit");
+
+if(bis.checked)
+c.push("Monitorage BIS en place");
+
+if(tof.checked)
+c.push("Monitorage TOF en place");
+
+return c;
+}
+
+/* GENERATION */
+function generer(){
+
+let t="";
+
+t+="DATE : "+formatDateFR(date.value)+"\n";
+t+="OPERATEUR : "+operateur.value+"\n";
+t+="ANESTHESISTE : "+anesth.value+"\n\n";
+
+t+="GESTE : "+geste.value+"\n\n";
+
+t+="CONDITIONNEMENT :\n";
+conditionnementText().forEach(x=>{
+t+="- "+x+"\n";
+});
+
+resultat.value=t;
+}
+
+/* LISTENERS */
+document.querySelectorAll("input,select").forEach(e=>{
+e.addEventListener("input",generer);
+});
+
+generer();
+
+</script>
+
+</body>
+</html>
