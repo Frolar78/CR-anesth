@@ -8,36 +8,15 @@
 body {margin:0;font-family:Arial;background:#f2f4f8;height:100vh;overflow:hidden;}
 h1{text-align:center;margin:6px;font-size:18px;}
 
-.grid{
-display:grid;
-grid-template-rows:auto auto 1fr;
-gap:8px;
-height:100vh;
-padding:8px;
-}
-
-.card{
-background:white;
-border-radius:10px;
-padding:10px;
-box-shadow:0 2px 5px rgba(0,0,0,0.1);
-}
-
-.ligne{
-display:flex;
-align-items:center;
-flex-wrap:wrap;
-margin-bottom:6px;
-}
-
+.grid{display:grid;grid-template-rows:auto auto 1fr;gap:8px;height:100vh;padding:8px;}
+.card{background:white;border-radius:10px;padding:10px;box-shadow:0 2px 5px rgba(0,0,0,0.1);}
+.ligne{display:flex;align-items:center;flex-wrap:wrap;margin-bottom:6px;}
 .ligne strong{min-width:170px;}
 
-button.option{
-padding:6px;margin:2px;font-size:12px;
-border-radius:6px;border:1px solid #ccc;
-background:white;cursor:pointer;
-}
+button.option{padding:6px;margin:2px;font-size:12px;border-radius:6px;border:1px solid #ccc;background:white;cursor:pointer;}
 button.option.active{background:#c9974d;color:white;}
+
+.plus{background:#28a745;color:white;border:none;border-radius:50%;width:24px;height:24px;cursor:pointer;margin-left:5px;}
 
 textarea{width:100%;height:100%;}
 select,input{margin:3px;}
@@ -50,9 +29,7 @@ select,input{margin:3px;}
 
 <div class="grid">
 
-<!-- LIGNE HAUTE -->
 <div class="card ligne">
-
 <strong>Date :</strong>
 <input type="date" id="date">
 
@@ -64,12 +41,9 @@ select,input{margin:3px;}
 
 <strong>Anesthésiste :</strong>
 <select id="anesth"></select>
-
 </div>
 
-<!-- GESTE -->
 <div class="card ligne">
-
 <strong>Geste :</strong>
 
 <select id="geste"></select>
@@ -82,9 +56,20 @@ select,input{margin:3px;}
 
 <input id="commentaire" placeholder="Précision..." style="display:none;">
 
+<button class="plus" onclick="ajouterGeste()">+</button>
+
+<span id="secondGesteBlock" style="display:none;">
+<select id="geste2"></select>
+
+<select id="cote2" style="display:none;">
+<option value="">Côté</option>
+<option value="gauche">Gauche</option>
+<option value="droite">Droite</option>
+</select>
+</span>
+
 </div>
 
-<!-- RESULTAT -->
 <div class="card">
 <textarea id="resultat"></textarea>
 </div>
@@ -113,8 +98,32 @@ const anesthesistes=[
 "Dr Daisy TRAN","Dr Rémy WIDEHEM","Dr Félix ZAMARON"
 ];
 
-/* OPERATEURS PAR SPECIALITE */
+/* OPERATEURS COMPLETS */
 const operateurs={
+
+"Chirurgie Orthopédique":[
+"Dr Hugo DARMANTE","Dr Matthieu GHREA","Dr Nicolas GUILLOT","Dr Tristan LASCAR"
+],
+
+"Chirurgie Viscérale":[
+"Dr Adolfo GAVELLI","Dr Anne DUBOIS-VERDIER","Dr Anna MARMORALE",
+"Dr Hubert PERRIN","Dr Nicoletta AMBROSIANI","Pr Fabrizio PANARO"
+],
+
+"Urologie":[
+"Dr Aurélie FLOCH","Dr Maher KECHAOU","Dr Patrick-Julien TREACY",
+"Dr Rafaelle CURSIO","Dr Xavier CARPENTIER"
+],
+
+"Endoscopie Digestive":[
+"Dr Alexandre CHARACHON","Dr Daniela AGREFILO",
+"Dr Jean-François DEMARQUAY","Dr Juliette LAVEYSSIERE","Dr Luc DIEZ"
+],
+
+"Chirurgie Gynécologique":[
+"Dr Abdi BAFGHI","Dr Guillaume BENOIST","Dr Julia AUMIPHIN",
+"Dr Reda DJAFER","Dr Wafaa EL LAAMOUCHI","Pr Bruno CARBONNE"
+],
 
 "Chirurgie ORL":[
 "Dr Diane LAZARD","Dr Riad BERGUIGA","Dr Sandrine CANIVET"
@@ -144,7 +153,6 @@ const operateurs={
 
 /* GESTES */
 const gestes={
-
 "Chirurgie Viscérale":{
 "Appendicectomie":{},
 "Colectomie":{cote:true},
@@ -154,18 +162,34 @@ const gestes={
 "Hernie ombilicale":{},
 "Duodéno-pancréatectomie céphalique":{},
 "Oesophagectomie Lewis-Santy":{}
-}
+},
 
+"Chirurgie Orthopédique":{
+"Prothèse Totale de Hanche":{cote:true},
+"Prothèse Totale de Genou":{cote:true},
+"Arthroscopie de Genou":{cote:true},
+"Arthroscopie d’épaule":{cote:true},
+"Canal carpien":{cote:true},
+"Prothèse totale d’épaule":{cote:true},
+"Clou gamma":{cote:true},
+"Plaque poignet":{cote:true},
+"Plaque cheville":{cote:true}
+},
+
+"Endoscopie Digestive":{
+"Gastroscopie":{},
+"Gastroscopie + Coloscopie":{},
+"Coloscopie":{},
+"ERCP":{},
+"Echo-endoscopie":{},
+"Mucosectomie":{},
+"POEM":{},
+"Dissection sous-muqueuse":{}
+}
 };
 
-/* SPECIALITES LISTE */
-const specialites=[
-"Chirurgie Viscérale","Chirurgie Orthopédique","Chirurgie Thoracique",
-"Chirurgie ORL","Endoscopie Digestive","Endoscopie Bronchique",
-"Chirurgie Gynécologique","Obstétrique","Radiologie Interventionnelle",
-"Cardiologie Interventionnelle","Ophtalmologie","Chirurgie Maxillo-Faciale",
-"Chirurgie Esthétique"
-];
+/* SPECIALITES */
+const specialites=Object.keys(operateurs);
 
 /* INIT */
 function init(){
@@ -174,7 +198,6 @@ specialites.forEach(s=>{
 specialite.innerHTML+=`<option>${s}</option>`;
 });
 
-/* anesth */
 anesth.innerHTML="<option>--</option>";
 anesthesistes.forEach(a=>{
 anesth.innerHTML+=`<option>${a}</option>`;
@@ -182,7 +205,7 @@ anesth.innerHTML+=`<option>${a}</option>`;
 }
 init();
 
-/* SPECIALITE CHANGE */
+/* SPECIALITE */
 specialite.addEventListener("change",function(){
 
 let s=this.value;
@@ -194,31 +217,42 @@ operateur.innerHTML+=`<option>${o}</option>`;
 });
 
 /* gestes */
-geste.innerHTML="";
-if(gestes[s]){
+chargerGestes(geste);
+
+});
+
+/* charger gestes */
+function chargerGestes(selectEl){
+let s=specialite.value;
+selectEl.innerHTML="";
+if(!gestes[s]) return;
+
 Object.keys(gestes[s]).forEach(g=>{
-geste.innerHTML+=`<option>${g}</option>`;
+selectEl.innerHTML+=`<option>${g}</option>`;
 });
 }
 
-generer();
-
-});
-
-/* GESTE CHANGE */
+/* GESTE */
 geste.addEventListener("change",function(){
-
-let s=specialite.value;
-let g=this.value;
-
-let config=gestes[s]?.[g];
-
-cote.style.display=config?.cote?"inline":"none";
-commentaire.style.display=config?.commentaire?"inline":"none";
-
-generer();
-
+majOptions(this.value,cote,commentaire);
 });
+
+geste2?.addEventListener?.("change",function(){
+majOptions(this.value,cote2);
+});
+
+function majOptions(g, coteEl, comEl){
+let s=specialite.value;
+let conf=gestes[s]?.[g];
+if(coteEl) coteEl.style.display=conf?.cote?"inline":"none";
+if(comEl) commentaire.style.display=conf?.commentaire?"inline":"none";
+}
+
+/* + */
+function ajouterGeste(){
+secondGesteBlock.style.display="inline";
+chargerGestes(geste2);
+}
 
 /* GENERER */
 function generer(){
@@ -229,17 +263,18 @@ t+="Date : "+formatDateFR(date.value)+"\n";
 t+="Opérateur : "+operateur.value+"\n";
 t+="Anesthésiste : "+anesth.value+"\n";
 
-/* geste */
-let g=geste.value;
-
-if(g){
-let txt=g;
+let txt=geste.value;
 
 if(cote.value) txt+=" ("+cote.value+")";
 if(commentaire.value) txt+=" - "+commentaire.value;
 
-t+="Geste : "+txt+"\n";
+if(geste2.value){
+let txt2=geste2.value;
+if(cote2.value) txt2+=" ("+cote2.value+")";
+txt+=" + "+txt2;
 }
+
+t+="Geste : "+txt+"\n";
 
 resultat.value=t;
 
