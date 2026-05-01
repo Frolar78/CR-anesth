@@ -41,6 +41,8 @@ select,input{margin:3px;}
 
 <strong>Anesthésiste :</strong>
 <select id="anesth"></select>
+
+<button onclick="navigator.clipboard.writeText(resultat.value)">📋 Copier</button>
 </div>
 
 <div class="card ligne">
@@ -66,6 +68,8 @@ select,input{margin:3px;}
 <option value="gauche">Gauche</option>
 <option value="droite">Droite</option>
 </select>
+
+<input id="commentaire2" placeholder="Précision..." style="display:none;">
 </span>
 
 </div>
@@ -79,11 +83,11 @@ select,input{margin:3px;}
 <script>
 
 /* DATE */
-date.valueAsDate=new Date();
+date.valueAsDate = new Date();
 
 function formatDateFR(d){
-if(!d)return"";
-let p=d.split("-");
+if(!d) return "";
+let p = d.split("-");
 return p[2]+"/"+p[1]+"/"+p[0];
 }
 
@@ -98,57 +102,23 @@ const anesthesistes=[
 "Dr Daisy TRAN","Dr Rémy WIDEHEM","Dr Félix ZAMARON"
 ];
 
-/* OPERATEURS COMPLETS */
+/* OPERATEURS */
 const operateurs={
-
 "Chirurgie Orthopédique":[
 "Dr Hugo DARMANTE","Dr Matthieu GHREA","Dr Nicolas GUILLOT","Dr Tristan LASCAR"
 ],
-
 "Chirurgie Viscérale":[
 "Dr Adolfo GAVELLI","Dr Anne DUBOIS-VERDIER","Dr Anna MARMORALE",
 "Dr Hubert PERRIN","Dr Nicoletta AMBROSIANI","Pr Fabrizio PANARO"
 ],
-
 "Urologie":[
 "Dr Aurélie FLOCH","Dr Maher KECHAOU","Dr Patrick-Julien TREACY",
 "Dr Rafaelle CURSIO","Dr Xavier CARPENTIER"
 ],
-
 "Endoscopie Digestive":[
 "Dr Alexandre CHARACHON","Dr Daniela AGREFILO",
 "Dr Jean-François DEMARQUAY","Dr Juliette LAVEYSSIERE","Dr Luc DIEZ"
-],
-
-"Chirurgie Gynécologique":[
-"Dr Abdi BAFGHI","Dr Guillaume BENOIST","Dr Julia AUMIPHIN",
-"Dr Reda DJAFER","Dr Wafaa EL LAAMOUCHI","Pr Bruno CARBONNE"
-],
-
-"Chirurgie ORL":[
-"Dr Diane LAZARD","Dr Riad BERGUIGA","Dr Sandrine CANIVET"
-],
-
-"Radiologie Interventionnelle":[
-"Dr Federico TORRE","Dr Giuseppe GUZZARDI"
-],
-
-"Cardiologie Interventionnelle":[
-"Dr Gabriel LATCU","Dr Denis GATY"
-],
-
-"Chirurgie Maxillo-Faciale":[
-"Dr Albert VAN HOVE"
-],
-
-"Endoscopie Bronchique":[
-"Dr Cécile MAINCENT","Dr Constance BLANDIN"
-],
-
-"Chirurgie Esthétique":[
-"Dr Marie-Christine MISSANA","Dr Abdi BAFGHI"
 ]
-
 };
 
 /* GESTES */
@@ -157,131 +127,125 @@ const gestes={
 "Appendicectomie":{},
 "Colectomie":{cote:true},
 "Cholécystectomie":{},
-"Segmentectomie Hépatique":{commentaire:true},
-"Hernie inguinale":{cote:true},
-"Hernie ombilicale":{},
-"Duodéno-pancréatectomie céphalique":{},
-"Oesophagectomie Lewis-Santy":{}
+"Hernie inguinale":{cote:true}
 },
-
 "Chirurgie Orthopédique":{
 "Prothèse Totale de Hanche":{cote:true},
 "Prothèse Totale de Genou":{cote:true},
 "Arthroscopie de Genou":{cote:true},
-"Arthroscopie d’épaule":{cote:true},
-"Canal carpien":{cote:true},
-"Prothèse totale d’épaule":{cote:true},
-"Clou gamma":{cote:true},
-"Plaque poignet":{cote:true},
-"Plaque cheville":{cote:true}
+"Canal carpien":{cote:true}
 },
-
 "Endoscopie Digestive":{
 "Gastroscopie":{},
-"Gastroscopie + Coloscopie":{},
 "Coloscopie":{},
-"ERCP":{},
-"Echo-endoscopie":{},
-"Mucosectomie":{},
-"POEM":{},
-"Dissection sous-muqueuse":{}
+"ERCP":{}
 }
 };
-
-/* SPECIALITES */
-const specialites=Object.keys(operateurs);
 
 /* INIT */
 function init(){
 
-specialites.forEach(s=>{
-specialite.innerHTML+=`<option>${s}</option>`;
+Object.keys(operateurs).forEach(s=>{
+specialite.innerHTML += `<option>${s}</option>`;
 });
 
-anesth.innerHTML="<option>--</option>";
 anesthesistes.forEach(a=>{
-anesth.innerHTML+=`<option>${a}</option>`;
+anesth.innerHTML += `<option>${a}</option>`;
 });
+
+generer();
 }
 init();
 
 /* SPECIALITE */
-specialite.addEventListener("change",function(){
+specialite.addEventListener("change", function(){
 
-let s=this.value;
+let s = this.value;
 
-/* opérateurs */
-operateur.innerHTML="<option>--</option>";
+operateur.innerHTML = "<option>--</option>";
 (operateurs[s]||[]).sort().forEach(o=>{
-operateur.innerHTML+=`<option>${o}</option>`;
+operateur.innerHTML += `<option>${o}</option>`;
 });
 
-/* gestes */
-chargerGestes(geste);
+geste.value = "";
+cote.value = "";
+commentaire.value = "";
+secondGesteBlock.style.display = "none";
 
+geste2.value = "";
+cote2.value = "";
+commentaire2.value = "";
+
+chargerGestes(geste);
+generer();
 });
 
 /* charger gestes */
 function chargerGestes(selectEl){
-let s=specialite.value;
-selectEl.innerHTML="";
+let s = specialite.value;
+selectEl.innerHTML = "";
 if(!gestes[s]) return;
 
 Object.keys(gestes[s]).forEach(g=>{
-selectEl.innerHTML+=`<option>${g}</option>`;
+selectEl.innerHTML += `<option>${g}</option>`;
 });
 }
 
-/* GESTE */
-geste.addEventListener("change",function(){
-majOptions(this.value,cote,commentaire);
+/* OPTIONS */
+geste.addEventListener("change", function(){
+majOptions(this.value, cote, commentaire);
 });
 
-geste2?.addEventListener?.("change",function(){
-majOptions(this.value,cote2);
+geste2.addEventListener("change", function(){
+majOptions(this.value, cote2, commentaire2);
 });
 
+/* FIX IMPORTANT */
 function majOptions(g, coteEl, comEl){
-let s=specialite.value;
-let conf=gestes[s]?.[g];
-if(coteEl) coteEl.style.display=conf?.cote?"inline":"none";
-if(comEl) commentaire.style.display=conf?.commentaire?"inline":"none";
+let s = specialite.value;
+let conf = gestes[s]?.[g] || {};
+
+if(coteEl) coteEl.style.display = conf.cote ? "inline" : "none";
+if(comEl) comEl.style.display = conf.commentaire ? "inline" : "none";
 }
 
-/* + */
+/* AJOUT GESTE */
 function ajouterGeste(){
-secondGesteBlock.style.display="inline";
+secondGesteBlock.style.display = "inline";
 chargerGestes(geste2);
 }
 
 /* GENERER */
 function generer(){
 
-let t="Patient pris en charge au bloc.\n\n";
+let t = "Patient pris en charge au bloc.\n\n";
 
-t+="Date : "+formatDateFR(date.value)+"\n";
-t+="Opérateur : "+operateur.value+"\n";
-t+="Anesthésiste : "+anesth.value+"\n";
+t += "Date : " + formatDateFR(date.value) + "\n";
+t += "Opérateur : " + operateur.value + "\n";
+t += "Anesthésiste : " + anesth.value + "\n";
 
-let txt=geste.value;
+let txt = geste.value;
 
-if(cote.value) txt+=" ("+cote.value+")";
-if(commentaire.value) txt+=" - "+commentaire.value;
+if(cote.value) txt += " ("+cote.value+")";
+if(commentaire.value) txt += " - "+commentaire.value;
 
 if(geste2.value){
-let txt2=geste2.value;
-if(cote2.value) txt2+=" ("+cote2.value+")";
-txt+=" + "+txt2;
+let txt2 = geste2.value;
+
+if(cote2.value) txt2 += " ("+cote2.value+")";
+if(commentaire2.value) txt2 += " - "+commentaire2.value;
+
+txt += " + " + txt2;
 }
 
-t+="Geste : "+txt+"\n";
+t += "Geste : " + txt + "\n";
 
-resultat.value=t;
-
+resultat.value = t;
 }
 
+/* AUTO UPDATE */
 document.querySelectorAll("select,input").forEach(e=>{
-e.addEventListener("change",generer);
+e.addEventListener("change", () => setTimeout(generer, 0));
 });
 
 </script>
