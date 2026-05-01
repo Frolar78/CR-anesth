@@ -15,16 +15,17 @@ body {
 
 h1 {
   text-align: center;
-  margin: 8px;
+  margin: 6px;
   font-size: 18px;
 }
 
+/* GRID + PLUS DE PLACE POUR CR */
 .grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: 1fr 1fr;
   gap: 8px;
-  height: calc(100vh - 50px);
+  height: calc(100vh - 45px);
   padding: 8px;
   box-sizing: border-box;
 }
@@ -63,10 +64,11 @@ button.option.active {
   color: white;
 }
 
+/* CR PLUS GRAND */
 textarea {
   width: 100%;
   height: 100%;
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .copy {
@@ -141,12 +143,14 @@ textarea {
 <button class="option" onclick="toggle(this)">ML</button>
 </div>
 
-<!-- INCIDENTS -->
+<!-- INCIDENTS SIMPLIFIÉ -->
 <div class="card">
 <h3>Incidents</h3>
-<button class="option" onclick="toggle(this)">Aucun</button>
-<button class="option" onclick="toggle(this)">Hypotension</button>
-<button class="option" onclick="toggle(this)">Désaturation</button>
+
+<button class="option" onclick="setAucunIncident(this)">Aucun</button>
+
+<h3 style="margin-top:8px;">Si incident :</h3>
+<input type="text" id="incidentLibre" placeholder="Décrire incident...">
 </div>
 
 <!-- RESULTAT -->
@@ -165,7 +169,7 @@ textarea {
 document.getElementById("date").valueAsDate = new Date();
 
 /* ======================
-   ANESTHÉSISTES
+   ANESTHÉSISTES (VIDE PAR DÉFAUT)
 ====================== */
 const anesthesistes = [
   "Dr Stéphanie ALBOUY",
@@ -193,7 +197,7 @@ const anesthesistes = [
 ];
 
 /* ======================
-   DATA COMPLET
+   DATA
 ====================== */
 const data = {
 
@@ -238,42 +242,11 @@ chirurgiens:[
 ].sort()
 },
 
-uro:{
-gestes:{},
-chirurgiens:[
-"Dr Aurélie FLOCH",
-"Dr Maher KECHAOU",
-"Dr Patrick-Julien TREACY",
-"Dr Rafaelle CURSIO",
-"Dr Xavier CARPENTIER"
-].sort()
-},
+uro:{gestes:{},chirurgiens:["Dr Aurélie FLOCH","Dr Maher KECHAOU","Dr Patrick-Julien TREACY","Dr Rafaelle CURSIO","Dr Xavier CARPENTIER"].sort()},
 
-endo:{
-gestes:{},
-chirurgiens:[
-"Dr Alexandre CHARACHON",
-"Dr Daniela AGREFILO",
-"Dr Jean-François DEMARQUAY",
-"Dr Juliette LAVEYSSIERE",
-"Dr Luc DIEZ"
-].sort()
-},
+endo:{gestes:{},chirurgiens:["Dr Alexandre CHARACHON","Dr Daniela AGREFILO","Dr Jean-François DEMARQUAY","Dr Juliette LAVEYSSIERE","Dr Luc DIEZ"].sort()},
 
-gyneco:{
-gestes:{},
-chirurgiens:[
-"Dr Abdi BAFGHI",
-"Dr Guillaume BENOIST",
-"Dr Julia AUMIPHIN",
-"Dr Reda DJAFER",
-"Dr Wafaa EL LAAMOUCHI",
-"Pr Bruno CARBONNE"
-].sort()
-},
-
-vasc:{gestes:{},chirurgiens:["Dr Petit"]},
-thor:{gestes:{},chirurgiens:["Dr Roux"]}
+gyneco:{gestes:{},chirurgiens:["Dr Abdi BAFGHI","Dr Guillaume BENOIST","Dr Julia AUMIPHIN","Dr Reda DJAFER","Dr Wafaa EL LAAMOUCHI","Pr Bruno CARBONNE"].sort()}
 
 };
 
@@ -282,6 +255,13 @@ thor:{gestes:{},chirurgiens:["Dr Roux"]}
 ====================== */
 function init(){
 let anes=document.getElementById("anesth");
+
+/* champ anesth VIDE par défaut */
+let empty=document.createElement("option");
+empty.value="";
+empty.text="-- Sélectionner --";
+empty.selected=true;
+anes.add(empty);
 
 anesthesistes.forEach(n=>{
   anes.innerHTML+=`<option>${n}</option>`;
@@ -302,15 +282,16 @@ let geste=document.getElementById("geste");
 chir.innerHTML="";
 geste.innerHTML="";
 
-if(!data[spec]) return;
-
-/* chirurgiens */
+/* CHIR VIDE PAR DÉFAUT */
 let empty=document.createElement("option");
 empty.value="";
 empty.text="-- Sélectionner --";
 empty.selected=true;
 chir.add(empty);
 
+if(!data[spec]) return;
+
+/* chirurgiens */
 data[spec].chirurgiens.forEach(c=>{
   chir.innerHTML+=`<option>${c}</option>`;
 });
@@ -343,6 +324,15 @@ document.getElementById("commentaireBlock").style.display=g?.commentaire?"block"
 generer();
 
 });
+
+/* ======================
+   INCIDENTS
+====================== */
+function setAucunIncident(btn){
+btn.classList.toggle("active");
+document.getElementById("incidentLibre").value="";
+generer();
+}
 
 /* ======================
    TOGGLE
@@ -380,6 +370,16 @@ texte+="Geste : "+g+"\n";
 
 }
 
+/* incidents */
+let inc=document.getElementById("incidentLibre").value;
+let aucun=document.querySelector(".card:nth-of-type(4) .active");
+
+if(aucun){
+texte+="Aucun incident\n";
+}else if(inc){
+texte+="Incident : "+inc+"\n";
+}
+
 document.getElementById("resultat").value=texte;
 
 }
@@ -393,6 +393,10 @@ t.select();
 document.execCommand("copy");
 alert("Copié !");
 }
+
+document.querySelectorAll("select,button,input").forEach(e=>{
+e.addEventListener("change",generer);
+});
 
 </script>
 
