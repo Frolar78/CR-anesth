@@ -2,177 +2,163 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>Compte rendu anesthésie</title>
+<title>CR Anesthésie</title>
 
 <style>
 body {
   font-family: Arial;
-  margin: 40px;
-  max-width: 900px;
+  background-color: #f5f7fa;
+  margin: 0;
+  padding: 20px;
 }
 
-h2 {
-  border-bottom: 2px solid #ccc;
+h1 {
+  text-align: center;
 }
 
-.section {
-  margin-bottom: 20px;
+.card {
+  background: white;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+button.option {
+  padding: 10px;
+  margin: 5px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+}
+
+button.option.active {
+  background: #007bff;
+  color: white;
 }
 
 textarea {
   width: 100%;
+  margin-top: 10px;
 }
 
-button {
-  padding: 10px;
+.main-btn {
+  width: 100%;
+  padding: 15px;
+  font-size: 16px;
   margin-top: 10px;
+  border: none;
+  border-radius: 10px;
   cursor: pointer;
 }
+
+.generate {
+  background: #28a745;
+  color: white;
+}
+
+.copy {
+  background: #007bff;
+  color: white;
+}
 </style>
+
 </head>
 
 <body>
 
-<h1>Générateur de compte rendu anesthésie</h1>
+<h1>CR Anesthésie</h1>
 
-<div class="section">
-<h2>Patient</h2>
-
-<label>ASA :</label>
-<select id="asa">
-  <option>ASA I</option>
-  <option>ASA II</option>
-  <option>ASA III</option>
-  <option>ASA IV</option>
-</select>
-
-<br><br>
-
-<label>Allergies :</label>
-<input type="checkbox" id="allergie"> Oui
-<input type="text" id="detailAllergie" placeholder="Préciser">
-
+<div class="card">
+<h3>ASA</h3>
+<button class="option" onclick="selectOne(this,'asa')">ASA I</button>
+<button class="option" onclick="selectOne(this,'asa')">ASA II</button>
+<button class="option" onclick="selectOne(this,'asa')">ASA III</button>
+<button class="option" onclick="selectOne(this,'asa')">ASA IV</button>
 </div>
 
-<div class="section">
-<h2>Technique</h2>
-
-<input type="checkbox" id="ag"> Anesthésie générale<br>
-<input type="checkbox" id="alr"> ALR<br>
-<input type="checkbox" id="sedation"> Sédation<br>
-
-<br>
-
-<label>Intubation :</label>
-<input type="checkbox" id="intub"> Oui
-
+<div class="card">
+<h3>Technique</h3>
+<button class="option" onclick="toggle(this)">AG</button>
+<button class="option" onclick="toggle(this)">ALR</button>
+<button class="option" onclick="toggle(this)">Sédation</button>
+<button class="option" onclick="toggle(this)">Intubation</button>
 </div>
 
-<div class="section">
-<h2>Monitoring</h2>
-
-<input type="checkbox" id="standard" checked> Standard<br>
-<input type="checkbox" id="kta"> KT artériel<br>
-<input type="checkbox" id="vvp"> VVP<br>
-
+<div class="card">
+<h3>Incidents</h3>
+<button class="option" onclick="toggle(this)">Aucun</button>
+<button class="option" onclick="toggle(this)">Hypotension</button>
+<button class="option" onclick="toggle(this)">Désaturation</button>
 </div>
 
-<div class="section">
-<h2>Incidents</h2>
-
-<input type="checkbox" id="aucunIncident"> Aucun<br>
-<input type="checkbox" id="hypo"> Hypotension<br>
-<input type="checkbox" id="desat"> Désaturation<br>
-
+<div class="card">
+<h3>Conclusion</h3>
+<input type="text" id="conclusion" placeholder="État en SSPI" style="width:100%; padding:10px;">
 </div>
 
-<div class="section">
-<h2>Conclusion</h2>
+<button class="main-btn generate" onclick="generer()">Générer</button>
+<button class="main-btn copy" onclick="copier()">Copier</button>
 
-<label>État en SSPI :</label>
-<input type="text" id="conclusion" placeholder="Stable, réveil simple...">
-
+<div class="card">
+<h3>Résultat</h3>
+<textarea id="resultat" rows="10"></textarea>
 </div>
-
-<button onclick="generer()">Générer</button>
-<button onclick="copier()">Copier</button>
-
-<h2>Compte rendu :</h2>
-
-<textarea id="resultat" rows="15"></textarea>
 
 <script>
-function generer() {
 
+let selections = {
+  asa: "",
+  technique: [],
+  incidents: []
+};
+
+function selectOne(btn, group) {
+  let buttons = btn.parentNode.querySelectorAll(".option");
+  buttons.forEach(b => b.classList.remove("active"));
+
+  btn.classList.add("active");
+  selections[group] = btn.innerText;
+}
+
+function toggle(btn) {
+  btn.classList.toggle("active");
+}
+
+function generer() {
   let texte = "";
 
-  // PATIENT
-  let asa = document.getElementById("asa").value;
-  texte += "Patient classé " + asa + ". ";
-
-  if (document.getElementById("allergie").checked) {
-    let detail = document.getElementById("detailAllergie").value;
-    texte += "Allergies connues : " + detail + ". ";
-  } else {
-    texte += "Pas d'allergie connue. ";
+  // ASA
+  if (selections.asa) {
+    texte += "Patient classé " + selections.asa + ".\n\n";
   }
-
-  texte += "\n\n";
 
   // TECHNIQUE
-  if (document.getElementById("ag").checked) {
-    texte += "Anesthésie générale réalisée. ";
+  let tech = [];
+  document.querySelectorAll(".card:nth-of-type(2) .active").forEach(b => {
+    tech.push(b.innerText);
+  });
+
+  if (tech.length > 0) {
+    texte += "Technique : " + tech.join(", ") + ".\n\n";
   }
-
-  if (document.getElementById("alr").checked) {
-    texte += "ALR associée. ";
-  }
-
-  if (document.getElementById("sedation").checked) {
-    texte += "Sédation réalisée. ";
-  }
-
-  if (document.getElementById("intub").checked) {
-    texte += "Intubation orotrachéale. ";
-  }
-
-  texte += "\n\n";
-
-  // MONITORING
-  texte += "Monitoring : ";
-
-  if (document.getElementById("standard").checked) {
-    texte += "standard ";
-  }
-
-  if (document.getElementById("kta").checked) {
-    texte += "+ KT artériel ";
-  }
-
-  if (document.getElementById("vvp").checked) {
-    texte += "+ VVP ";
-  }
-
-  texte += ".\n\n";
 
   // INCIDENTS
-  if (document.getElementById("aucunIncident").checked) {
+  let incidents = [];
+  document.querySelectorAll(".card:nth-of-type(3) .active").forEach(b => {
+    incidents.push(b.innerText);
+  });
+
+  if (incidents.includes("Aucun")) {
     texte += "Aucun incident per-opératoire.\n\n";
-  } else {
-    if (document.getElementById("hypo").checked) {
-      texte += "Épisode d'hypotension. ";
-    }
-
-    if (document.getElementById("desat").checked) {
-      texte += "Désaturation transitoire. ";
-    }
-
-    texte += "\n\n";
+  } else if (incidents.length > 0) {
+    texte += "Incidents : " + incidents.join(", ") + ".\n\n";
   }
 
   // CONCLUSION
   let conclusion = document.getElementById("conclusion").value;
-  texte += "Évolution en SSPI : " + conclusion + ".";
+  texte += "Évolution : " + conclusion + ".";
 
   document.getElementById("resultat").value = texte;
 }
@@ -183,6 +169,7 @@ function copier() {
   document.execCommand("copy");
   alert("Copié !");
 }
+
 </script>
 
 </body>
