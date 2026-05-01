@@ -2,85 +2,120 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>CR Anesthésie PWA</title>
+<title>CR Anesthésie</title>
 
 <style>
 body{
 margin:0;
-font-family:Arial;
-background:#eef2f6;
+font-family:Inter, Arial;
+background:linear-gradient(135deg,#e6ecf3,#f8fafc);
 height:100vh;
 overflow:hidden;
 }
 
-h1{text-align:center;margin:6px;font-size:18px;}
+h1{
+text-align:center;
+margin:8px;
+font-size:20px;
+}
 
 .container{
 display:grid;
-grid-template-columns: 1fr 1fr 2fr;
-gap:10px;
+grid-template-columns:1fr 1fr 2fr;
+gap:12px;
 height:100vh;
-padding:10px;
+padding:12px;
 box-sizing:border-box;
 }
 
+/* CARDS */
 .panel{
 background:white;
-border-radius:10px;
-padding:10px;
-box-shadow:0 2px 6px rgba(0,0,0,0.1);
-overflow:auto;
+border-radius:14px;
+padding:12px;
+box-shadow:0 6px 14px rgba(0,0,0,0.08);
 display:flex;
 flex-direction:column;
+overflow:auto;
 }
 
 .section-title{
-font-weight:bold;
-margin:8px 0;
+font-weight:600;
+margin-bottom:10px;
 font-size:14px;
+color:#334155;
+border-bottom:1px solid #e2e8f0;
+padding-bottom:4px;
 }
 
+/* FORM */
 .row{
 display:flex;
 flex-wrap:wrap;
 gap:6px;
+margin-bottom:8px;
 align-items:center;
-margin-bottom:6px;
 }
 
 label{
 min-width:120px;
 font-size:12px;
+color:#475569;
 }
 
 input, select{
+padding:6px;
+border-radius:6px;
+border:1px solid #cbd5e1;
 font-size:12px;
-padding:4px;
 }
 
-.perop-row{
-display:grid;
-grid-template-columns: 220px 1fr;
-margin-bottom:8px;
-align-items:center;
-}
-
+/* CHECK BUTTONS */
 .checkbox-line{
 display:flex;
 flex-wrap:wrap;
-gap:10px;
-font-size:12px;
+gap:6px;
 }
 
+.checkbox-line label{
+border:1px solid #cbd5e1;
+padding:6px 8px;
+border-radius:8px;
+cursor:pointer;
+background:white;
+transition:0.2s;
+}
+
+.checkbox-line input{
+display:none;
+}
+
+.checkbox-line input:checked + span{
+background:#2563eb;
+color:white;
+border-radius:6px;
+padding:2px 4px;
+}
+
+/* PEROP */
+.perop-row{
+display:grid;
+grid-template-columns:220px 1fr;
+margin-bottom:10px;
+align-items:center;
+}
+
+/* OUTPUT */
 .output{
 white-space:pre-wrap;
 font-size:12px;
-background:#0f172a;
-color:#d1d5db;
-padding:10px;
-border-radius:8px;
+background:#020617;
+color:#e2e8f0;
+padding:12px;
+border-radius:10px;
 height:100%;
 overflow:auto;
+font-family:monospace;
 }
 </style>
 
@@ -88,11 +123,11 @@ overflow:auto;
 
 <body>
 
-<h1>CR Anesthésie - Bloc</h1>
+<h1>CR Anesthésie</h1>
 
 <div class="container">
 
-<!-- IDENTITÉ -->
+<!-- IDENTITE -->
 <div class="panel">
 <div class="section-title">Identité</div>
 
@@ -114,13 +149,11 @@ overflow:auto;
 
 <!-- GESTE -->
 <div class="panel">
-<div class="section-title">Geste chirurgical</div>
+<div class="section-title">Geste</div>
 
 <div class="row">
 <label>Spécialité</label>
-<select id="specialite">
-<option value="">--</option>
-</select>
+<select id="specialite"><option value="">--</option></select>
 </div>
 
 <div class="row">
@@ -150,33 +183,33 @@ overflow:auto;
 <div class="perop-row">
 Conditionnement
 <div class="checkbox-line">
-<label><input type="checkbox" id="scope"> Scope</label>
-<label><input type="checkbox" id="vvp"> VVP</label>
-<label><input type="checkbox" id="kta"> KTA</label>
-<label><input type="checkbox" id="ktc"> KTC</label>
-<label><input type="checkbox" id="bis"> BIS</label>
-<label><input type="checkbox" id="tof"> TOF</label>
+<label><input type="checkbox" id="scope"><span>Scope</span></label>
+<label><input type="checkbox" id="vvp"><span>VVP</span></label>
+<label><input type="checkbox" id="kta"><span>KTA</span></label>
+<label><input type="checkbox" id="ktc"><span>KTC</span></label>
+<label><input type="checkbox" id="bis"><span>BIS</span></label>
+<label><input type="checkbox" id="tof"><span>TOF</span></label>
 </div>
 </div>
 
 <div class="perop-row">
 Induction
 <div class="checkbox-line">
-<label><input type="checkbox" id="propofol"> Propofol</label>
-<label><input type="checkbox" id="etomidate"> Etomidate</label>
-<label><input type="checkbox" id="ketamine"> Ketamine</label>
-<label><input type="checkbox" id="sufentanil"> Sufentanil</label>
-<label><input type="checkbox" id="remifentanil"> Remifentanil</label>
+<label><input type="checkbox" id="propofol"><span>Propofol</span></label>
+<label><input type="checkbox" id="etomidate"><span>Etomidate</span></label>
+<label><input type="checkbox" id="ketamine"><span>Ketamine</span></label>
+<label><input type="checkbox" id="sufentanil"><span>Sufentanil</span></label>
+<label><input type="checkbox" id="remifentanil"><span>Remifentanil</span></label>
 </div>
 </div>
 
 <div class="perop-row">
 Curare
 <div class="checkbox-line">
-<label><input type="checkbox" id="curare_aucun"> Aucun</label>
-<label><input type="checkbox" id="atracurium"> Atracurium</label>
-<label><input type="checkbox" id="rocuronium"> Rocuronium</label>
-<label><input type="checkbox" id="celocurine"> Celocurine</label>
+<label><input type="checkbox" id="curare_aucun"><span>Aucun</span></label>
+<label><input type="checkbox" id="atracurium"><span>Atracurium</span></label>
+<label><input type="checkbox" id="rocuronium"><span>Rocuronium</span></label>
+<label><input type="checkbox" id="celocurine"><span>Celocurine</span></label>
 </div>
 </div>
 
@@ -188,6 +221,7 @@ Curare
 
 <hr>
 <div class="output" id="resultat"></div>
+
 </div>
 
 </div>
@@ -195,9 +229,9 @@ Curare
 <script>
 
 /* DATE */
-date.valueAsDate = new Date();
+date.valueAsDate=new Date();
 
-/* ================= DONNÉES (INTOUCHÉES) ================= */
+/* ===== DONNÉES INTACTES ===== */
 
 const anesthesistes=[
 "Dr Stéphanie ALBOUY","Dr Guy ARMANDO","Dr Laure BONNET","Dr Mohammed BOUREGBA",
@@ -224,80 +258,29 @@ const operateurs={
 };
 
 const gestes={
-
-"Chirurgie Viscérale":{
-"Appendicectomie":{},
-"Colectomie":{cote:true},
-"Cholécystectomie":{},
-"Segmentectomie Hépatique":{},
-"Hernie inguinale":{cote:true},
-"Hernie ombilicale":{},
-"Duodéno-pancréatectomie céphalique":{},
-"Oesophagectomie Lewis-Santy":{}
-},
-
-"Chirurgie Orthopédique":{
-"Prothèse Totale de Hanche":{cote:true},
-"Prothèse Totale de Genou":{cote:true},
-"Arthroscopie de Genou":{cote:true},
-"Arthroscopie d’épaule":{cote:true},
-"Canal carpien":{cote:true},
-"Prothèse totale d’épaule":{cote:true},
-"Clou gamma":{cote:true},
-"Plaque poignet":{cote:true},
-"Plaque cheville":{cote:true}
-},
-
-"Endoscopie Digestive":{
-"Gastroscopie":{},
-"Gastroscopie + Coloscopie":{},
-"Coloscopie":{},
-"ERCP":{},
-"Echo-endoscopie":{},
-"Mucosectomie":{},
-"POEM":{},
-"Dissection sous-muqueuse":{}
-},
-
-/* IMPORTANT : toutes les spécialités présentes */
-"Urologie":{},
-"Chirurgie Gynécologique":{},
-"Chirurgie ORL":{},
-"Radiologie Interventionnelle":{},
-"Cardiologie Interventionnelle":{},
-"Chirurgie Maxillo-Faciale":{},
-"Endoscopie Bronchique":{},
-"Chirurgie Esthétique":{}
-
+"Chirurgie Viscérale":{"Appendicectomie":{},"Colectomie":{cote:true},"Cholécystectomie":{},"Segmentectomie Hépatique":{},"Hernie inguinale":{cote:true},"Hernie ombilicale":{},"Duodéno-pancréatectomie céphalique":{},"Oesophagectomie Lewis-Santy":{}},
+"Chirurgie Orthopédique":{"Prothèse Totale de Hanche":{cote:true},"Prothèse Totale de Genou":{cote:true},"Arthroscopie de Genou":{cote:true},"Arthroscopie d’épaule":{cote:true},"Canal carpien":{cote:true},"Prothèse totale d’épaule":{cote:true},"Clou gamma":{cote:true},"Plaque poignet":{cote:true},"Plaque cheville":{cote:true}},
+"Endoscopie Digestive":{"Gastroscopie":{},"Gastroscopie + Coloscopie":{},"Coloscopie":{},"ERCP":{},"Echo-endoscopie":{},"Mucosectomie":{},"POEM":{},"Dissection sous-muqueuse":{}},
+"Urologie":{},"Chirurgie Gynécologique":{},"Chirurgie ORL":{},"Radiologie Interventionnelle":{},"Cardiologie Interventionnelle":{},"Chirurgie Maxillo-Faciale":{},"Endoscopie Bronchique":{},"Chirurgie Esthétique":{}
 };
 
 /* INIT */
-Object.keys(operateurs).forEach(s=>{
-specialite.innerHTML += `<option>${s}</option>`;
-});
-
-anesthesistes.forEach(a=>{
-anesth.innerHTML += `<option>${a}</option>`;
-});
+Object.keys(operateurs).forEach(s=>specialite.innerHTML+=`<option>${s}</option>`);
+anesthesistes.forEach(a=>anesth.innerHTML+=`<option>${a}</option>`);
 
 /* SPECIALITE */
 specialite.addEventListener("change",()=>{
 let s=specialite.value;
 
 operateur.innerHTML="";
-(operateurs[s]||[]).forEach(o=>{
-operateur.innerHTML += `<option>${o}</option>`;
-});
+(operateurs[s]||[]).forEach(o=>operateur.innerHTML+=`<option>${o}</option>`);
 
 geste.innerHTML="";
 let liste=Object.keys(gestes[s]||{});
-
 if(liste.length===0){
 geste.innerHTML="<option>Aucun geste défini</option>";
 }else{
-liste.forEach(g=>{
-geste.innerHTML += `<option>${g}</option>`;
-});
+liste.forEach(g=>geste.innerHTML+=`<option>${g}</option>`);
 }
 });
 
@@ -305,7 +288,6 @@ geste.innerHTML += `<option>${g}</option>`;
 function generer(){
 
 let t="";
-
 t+="DATE : "+date.value+"\n";
 t+="OPERATEUR : "+operateur.value+"\n";
 t+="ANESTHESISTE : "+anesth.value+"\n\n";
@@ -316,7 +298,6 @@ if(commentaire.value) t+=" - "+commentaire.value;
 
 t+="\n\n--- PER-OPERATOIRE ---\n";
 
-/* conditionnement */
 let cond=[];
 if(scope.checked) cond.push("Scope");
 if(vvp.checked) cond.push("VVP");
@@ -327,7 +308,6 @@ if(tof.checked) cond.push("TOF");
 
 t+="Conditionnement : "+cond.join(", ")+"\n";
 
-/* induction */
 let ind=[];
 if(propofol.checked) ind.push("Propofol");
 if(etomidate.checked) ind.push("Etomidate");
@@ -337,11 +317,9 @@ if(remifentanil.checked) ind.push("Remifentanil");
 
 t+="Induction : "+ind.join(" + ")+"\n";
 
-/* curare */
 let cur=[];
-if(curare_aucun.checked){
-cur=["Aucun"];
-}else{
+if(curare_aucun.checked){cur=["Aucun"];}
+else{
 if(atracurium.checked) cur.push("Atracurium");
 if(rocuronium.checked) cur.push("Rocuronium");
 if(celocurine.checked) cur.push("Celocurine");
@@ -358,11 +336,7 @@ t+="Autres : "+autres.value+"\n";
 resultat.innerText=t;
 }
 
-/* auto update */
-document.querySelectorAll("input,select").forEach(e=>{
-e.addEventListener("input",generer);
-});
-
+document.querySelectorAll("input,select").forEach(e=>e.addEventListener("input",generer));
 generer();
 
 </script>
