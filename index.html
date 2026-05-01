@@ -118,7 +118,9 @@ overflow:auto;
 
 <div class="row">
 <label>Spécialité</label>
-<select id="specialite"></select>
+<select id="specialite">
+<option value="">--</option>
+</select>
 </div>
 
 <div class="row">
@@ -195,7 +197,7 @@ Curare
 /* DATE */
 date.valueAsDate = new Date();
 
-/* DONNÉES (100% CONSERVÉES) */
+/* ================= DONNÉES (INTOUCHÉES) ================= */
 
 const anesthesistes=[
 "Dr Stéphanie ALBOUY","Dr Guy ARMANDO","Dr Laure BONNET","Dr Mohammed BOUREGBA",
@@ -222,6 +224,7 @@ const operateurs={
 };
 
 const gestes={
+
 "Chirurgie Viscérale":{
 "Appendicectomie":{},
 "Colectomie":{cote:true},
@@ -232,6 +235,7 @@ const gestes={
 "Duodéno-pancréatectomie céphalique":{},
 "Oesophagectomie Lewis-Santy":{}
 },
+
 "Chirurgie Orthopédique":{
 "Prothèse Totale de Hanche":{cote:true},
 "Prothèse Totale de Genou":{cote:true},
@@ -243,6 +247,7 @@ const gestes={
 "Plaque poignet":{cote:true},
 "Plaque cheville":{cote:true}
 },
+
 "Endoscopie Digestive":{
 "Gastroscopie":{},
 "Gastroscopie + Coloscopie":{},
@@ -252,7 +257,18 @@ const gestes={
 "Mucosectomie":{},
 "POEM":{},
 "Dissection sous-muqueuse":{}
-}
+},
+
+/* IMPORTANT : toutes les spécialités présentes */
+"Urologie":{},
+"Chirurgie Gynécologique":{},
+"Chirurgie ORL":{},
+"Radiologie Interventionnelle":{},
+"Cardiologie Interventionnelle":{},
+"Chirurgie Maxillo-Faciale":{},
+"Endoscopie Bronchique":{},
+"Chirurgie Esthétique":{}
+
 };
 
 /* INIT */
@@ -274,9 +290,15 @@ operateur.innerHTML += `<option>${o}</option>`;
 });
 
 geste.innerHTML="";
-Object.keys(gestes[s]||{}).forEach(g=>{
+let liste=Object.keys(gestes[s]||{});
+
+if(liste.length===0){
+geste.innerHTML="<option>Aucun geste défini</option>";
+}else{
+liste.forEach(g=>{
 geste.innerHTML += `<option>${g}</option>`;
 });
+}
 });
 
 /* GENERATION */
