@@ -5,83 +5,42 @@
 <title>CR Anesthésie</title>
 
 <style>
-body {
-  margin:0;
-  font-family:Arial;
-  background:#f2f4f8;
-  height:100vh;
-  overflow:hidden;
-}
+body {margin:0;font-family:Arial;background:#f2f4f8;height:100vh;overflow:hidden;}
+h1{text-align:center;margin:6px;font-size:18px;}
 
-h1 {
-  text-align:center;
-  margin:6px;
-  font-size:18px;
-}
-
-/* GRID */
 .grid{
-  display:grid;
-  grid-template-columns:1fr;
-  grid-template-rows:auto auto 1fr;
-  gap:8px;
-  height:100vh;
-  padding:8px;
+display:grid;
+grid-template-rows:auto auto 1fr;
+gap:8px;
+height:100vh;
+padding:8px;
 }
 
-/* CARD */
 .card{
-  background:white;
-  border-radius:10px;
-  padding:10px;
-  box-shadow:0 2px 5px rgba(0,0,0,0.1);
+background:white;
+border-radius:10px;
+padding:10px;
+box-shadow:0 2px 5px rgba(0,0,0,0.1);
 }
 
-/* LIGNES TYPE IMAGE */
-.ligne {
-  display:flex;
-  align-items:center;
-  flex-wrap:wrap;
-  margin-bottom:6px;
+.ligne{
+display:flex;
+align-items:center;
+flex-wrap:wrap;
+margin-bottom:6px;
 }
 
-.ligne strong {
-  min-width:160px;
-}
+.ligne strong{min-width:170px;}
 
-/* BOUTONS */
 button.option{
-  padding:6px;
-  margin:2px;
-  font-size:12px;
-  border-radius:6px;
-  border:1px solid #ccc;
-  background:white;
-  cursor:pointer;
+padding:6px;margin:2px;font-size:12px;
+border-radius:6px;border:1px solid #ccc;
+background:white;cursor:pointer;
 }
+button.option.active{background:#c9974d;color:white;}
 
-button.option.active{
-  background:#c9974d;
-  color:white;
-}
-
-/* SELECT / INPUT */
-select,input{
-  margin-left:5px;
-  margin-right:5px;
-}
-
-/* KTA OPTIONS INLINE */
-#ktaOptions{
-  display:none;
-}
-
-/* RESULTAT */
-textarea{
-  width:100%;
-  height:100%;
-  font-size:13px;
-}
+textarea{width:100%;height:100%;}
+select,input{margin:3px;}
 </style>
 </head>
 
@@ -91,57 +50,37 @@ textarea{
 
 <div class="grid">
 
-<!-- HAUT -->
+<!-- LIGNE HAUTE -->
 <div class="card ligne">
+
 <strong>Date :</strong>
 <input type="date" id="date">
 
-<strong>Chir :</strong>
-<select id="chirurgien"></select>
+<strong>Spécialité :</strong>
+<select id="specialite"></select>
 
-<strong>Anesth :</strong>
+<strong>Opérateur :</strong>
+<select id="operateur"></select>
+
+<strong>Anesthésiste :</strong>
 <select id="anesth"></select>
+
 </div>
 
-<!-- ANESTHESIE LIGNES -->
-<div class="card">
+<!-- GESTE -->
+<div class="card ligne">
 
-<div class="ligne">
-<strong>Conditionnement :</strong>
+<strong>Geste :</strong>
 
-<button class="option" onclick="toggle(this)">Scope</button>
-<button class="option" onclick="toggle(this)">VVP</button>
-<button class="option" onclick="toggleKTA(this)">KTA</button>
-<button class="option" onclick="toggle(this)">KTC</button>
-<button class="option" onclick="toggle(this)">BIS</button>
-<button class="option" onclick="toggle(this)">TOF</button>
+<select id="geste"></select>
 
-<span id="ktaOptions">
-<select id="ktaSite">
-<option value="">Site</option>
-<option value="radial">Radial</option>
-<option value="fémoral">Fémoral</option>
-</select>
-
-<select id="ktaCote">
+<select id="cote" style="display:none;">
 <option value="">Côté</option>
-<option value="droit">Droit</option>
 <option value="gauche">Gauche</option>
+<option value="droite">Droite</option>
 </select>
-</span>
 
-</div>
-
-<div class="ligne">
-<strong>Induction :</strong>
-
-<button class="option" onclick="toggle(this)">Propofol</button>
-<button class="option" onclick="toggle(this)">Etomidate</button>
-<button class="option" onclick="toggle(this)">Remifentanil</button>
-<button class="option" onclick="toggle(this)">Sufentanil</button>
-<button class="option" onclick="toggle(this)">Ketamine</button>
-
-</div>
+<input id="commentaire" placeholder="Précision..." style="display:none;">
 
 </div>
 
@@ -155,16 +94,16 @@ textarea{
 <script>
 
 /* DATE */
-date.valueAsDate = new Date();
+date.valueAsDate=new Date();
 
 function formatDateFR(d){
-if(!d) return "";
+if(!d)return"";
 let p=d.split("-");
 return p[2]+"/"+p[1]+"/"+p[0];
 }
 
-/* ANESTHESISTES */
-const anesthesistes = [
+/* ANESTH */
+const anesthesistes=[
 "Dr Stéphanie ALBOUY","Dr Guy ARMANDO","Dr Laure BONNET","Dr Mohammed BOUREGBA",
 "Dr Jean CATINEAU","Dr Alexandre FERRIERO","Dr Arthur FROHLICH",
 "Dr Jean-Philippe GUERIN","Dr Sébastien GHIGLIONE","Dr Léa LEY-GHIGLIONE",
@@ -174,51 +113,112 @@ const anesthesistes = [
 "Dr Daisy TRAN","Dr Rémy WIDEHEM","Dr Félix ZAMARON"
 ];
 
-/* CHIR */
-const chirurgiens = {
-ortho:["Dr Hugo DARMANTE","Dr Matthieu GHREA","Dr Nicolas GUILLOT","Dr Tristan LASCAR"].sort()
+/* OPERATEURS PAR SPECIALITE */
+const operateurs={
+
+"Chirurgie ORL":[
+"Dr Diane LAZARD","Dr Riad BERGUIGA","Dr Sandrine CANIVET"
+],
+
+"Radiologie Interventionnelle":[
+"Dr Federico TORRE","Dr Giuseppe GUZZARDI"
+],
+
+"Cardiologie Interventionnelle":[
+"Dr Gabriel LATCU","Dr Denis GATY"
+],
+
+"Chirurgie Maxillo-Faciale":[
+"Dr Albert VAN HOVE"
+],
+
+"Endoscopie Bronchique":[
+"Dr Cécile MAINCENT","Dr Constance BLANDIN"
+],
+
+"Chirurgie Esthétique":[
+"Dr Marie-Christine MISSANA","Dr Abdi BAFGHI"
+]
+
 };
+
+/* GESTES */
+const gestes={
+
+"Chirurgie Viscérale":{
+"Appendicectomie":{},
+"Colectomie":{cote:true},
+"Cholécystectomie":{},
+"Segmentectomie Hépatique":{commentaire:true},
+"Hernie inguinale":{cote:true},
+"Hernie ombilicale":{},
+"Duodéno-pancréatectomie céphalique":{},
+"Oesophagectomie Lewis-Santy":{}
+}
+
+};
+
+/* SPECIALITES LISTE */
+const specialites=[
+"Chirurgie Viscérale","Chirurgie Orthopédique","Chirurgie Thoracique",
+"Chirurgie ORL","Endoscopie Digestive","Endoscopie Bronchique",
+"Chirurgie Gynécologique","Obstétrique","Radiologie Interventionnelle",
+"Cardiologie Interventionnelle","Ophtalmologie","Chirurgie Maxillo-Faciale",
+"Chirurgie Esthétique"
+];
 
 /* INIT */
 function init(){
 
-let a=anesth;
-
-let empty=document.createElement("option");
-empty.text="-- Sélectionner --";
-empty.selected=true;
-a.add(empty);
-
-anesthesistes.forEach(n=>{
-a.innerHTML+=`<option>${n}</option>`;
+specialites.forEach(s=>{
+specialite.innerHTML+=`<option>${s}</option>`;
 });
 
-/* chirurgiens (simple pour l’instant) */
-let c=chirurgien;
-let empty2=document.createElement("option");
-empty2.text="-- Sélectionner --";
-empty2.selected=true;
-c.add(empty2);
-
-chirurgiens.ortho.forEach(n=>{
-c.innerHTML+=`<option>${n}</option>`;
+/* anesth */
+anesth.innerHTML="<option>--</option>";
+anesthesistes.forEach(a=>{
+anesth.innerHTML+=`<option>${a}</option>`;
 });
-
 }
 init();
 
-/* TOGGLE */
-function toggle(b){
-b.classList.toggle("active");
-generer();
+/* SPECIALITE CHANGE */
+specialite.addEventListener("change",function(){
+
+let s=this.value;
+
+/* opérateurs */
+operateur.innerHTML="<option>--</option>";
+(operateurs[s]||[]).sort().forEach(o=>{
+operateur.innerHTML+=`<option>${o}</option>`;
+});
+
+/* gestes */
+geste.innerHTML="";
+if(gestes[s]){
+Object.keys(gestes[s]).forEach(g=>{
+geste.innerHTML+=`<option>${g}</option>`;
+});
 }
 
-/* KTA */
-function toggleKTA(b){
-b.classList.toggle("active");
-ktaOptions.style.display=b.classList.contains("active")?"inline":"none";
 generer();
-}
+
+});
+
+/* GESTE CHANGE */
+geste.addEventListener("change",function(){
+
+let s=specialite.value;
+let g=this.value;
+
+let config=gestes[s]?.[g];
+
+cote.style.display=config?.cote?"inline":"none";
+commentaire.style.display=config?.commentaire?"inline":"none";
+
+generer();
+
+});
 
 /* GENERER */
 function generer(){
@@ -226,41 +226,26 @@ function generer(){
 let t="Patient pris en charge au bloc.\n\n";
 
 t+="Date : "+formatDateFR(date.value)+"\n";
-t+="Chirurgien : "+chirurgien.value+"\n";
+t+="Opérateur : "+operateur.value+"\n";
 t+="Anesthésiste : "+anesth.value+"\n";
 
-/* CONDITIONNEMENT */
-let cond=[];
+/* geste */
+let g=geste.value;
 
-/* Scope */
-if([...document.querySelectorAll(".option.active")]
-.some(b=>b.innerText==="Scope")){
-cond.push("Mise en place PNI, ECG 3 branches, SpO2");
-}
+if(g){
+let txt=g;
 
-/* KTA */
-let kta=[...document.querySelectorAll(".option.active")]
-.find(b=>b.innerText==="KTA");
+if(cote.value) txt+=" ("+cote.value+")";
+if(commentaire.value) txt+=" - "+commentaire.value;
 
-if(kta){
-let site=ktaSite.value;
-let cote=ktaCote.value;
-
-if(site && cote){
-cond.push("Cathéter artériel "+site+" "+cote);
-}
-}
-
-if(cond.length){
-t+="Conditionnement : "+cond.join(", ")+"\n";
+t+="Geste : "+txt+"\n";
 }
 
 resultat.value=t;
 
 }
 
-/* EVENTS */
-document.querySelectorAll("select,button,input").forEach(e=>{
+document.querySelectorAll("select,input").forEach(e=>{
 e.addEventListener("change",generer);
 });
 
