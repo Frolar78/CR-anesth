@@ -19,7 +19,6 @@ h1 {
   font-size: 18px;
 }
 
-/* GRID + PLUS DE PLACE POUR CR */
 .grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -35,6 +34,7 @@ h1 {
   border-radius: 10px;
   padding: 8px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  overflow: auto;
 }
 
 h3 {
@@ -64,7 +64,6 @@ button.option.active {
   color: white;
 }
 
-/* CR PLUS GRAND */
 textarea {
   width: 100%;
   height: 100%;
@@ -108,9 +107,7 @@ textarea {
   <option value="">-- Choisir --</option>
   <option value="ortho">Orthopédie</option>
   <option value="visc">Viscérale</option>
-  <option value="vasc">Vasculaire</option>
   <option value="uro">Urologie</option>
-  <option value="thor">Thoracique</option>
   <option value="gyneco">Gynécologie</option>
   <option value="endo">Endoscopie</option>
 </select>
@@ -124,7 +121,6 @@ textarea {
   <option value="">--</option>
   <option value="droit">Droit</option>
   <option value="gauche">Gauche</option>
-  <option value="bilatéral">Bilatéral</option>
 </select>
 </div>
 
@@ -134,23 +130,38 @@ textarea {
 </div>
 </div>
 
-<!-- TECHNIQUE -->
+<!-- ANESTHESIE -->
 <div class="card">
-<h3>Technique</h3>
-<button class="option" onclick="toggle(this)">AG</button>
-<button class="option" onclick="toggle(this)">ALR</button>
-<button class="option" onclick="toggle(this)">Intubation</button>
-<button class="option" onclick="toggle(this)">ML</button>
-</div>
 
-<!-- INCIDENTS SIMPLIFIÉ -->
-<div class="card">
-<h3>Incidents</h3>
+<h3>Conditionnement</h3>
+<button class="option" onclick="toggle(this)">Scope</button>
+<button class="option" onclick="toggle(this)">VVP</button>
+<button class="option" onclick="toggle(this)">KTA</button>
+<button class="option" onclick="toggle(this)">KTC</button>
+<button class="option" onclick="toggle(this)">BIS</button>
+<button class="option" onclick="toggle(this)">TOF</button>
 
-<button class="option" onclick="setAucunIncident(this)">Aucun</button>
+<h3>Induction</h3>
+<button class="option" onclick="toggle(this)">Propofol</button>
+<button class="option" onclick="toggle(this)">Etomidate</button>
+<button class="option" onclick="toggle(this)">Remifentanil</button>
+<button class="option" onclick="toggle(this)">Sufentanil</button>
+<button class="option" onclick="toggle(this)">Ketamine</button>
 
-<h3 style="margin-top:8px;">Si incident :</h3>
-<input type="text" id="incidentLibre" placeholder="Décrire incident...">
+<h3>ALR</h3>
+<button class="option" onclick="toggleALR(this)">ALR</button>
+
+<select id="alrType" style="display:none;">
+<option value="">-- Choisir ALR --</option>
+<option>Bloc axillaire</option>
+<option>Bloc inter-scalénique</option>
+<option>Bloc paravertébral</option>
+<option>Bloc érecteur du rachis</option>
+<option>TAP-bloc</option>
+<option>Bloc sciatique poplité</option>
+<option>Bloc fémoral</option>
+</select>
+
 </div>
 
 <!-- RESULTAT -->
@@ -163,140 +174,52 @@ textarea {
 
 <script>
 
-/* ======================
-   DATE
-====================== */
+/* DATE */
 document.getElementById("date").valueAsDate = new Date();
 
-/* ======================
-   ANESTHÉSISTES (VIDE PAR DÉFAUT)
-====================== */
-const anesthesistes = [
-  "Dr Stéphanie ALBOUY",
-  "Dr Guy ARMANDO",
-  "Dr Laure BONNET",
-  "Dr Mohammed BOUREGBA",
-  "Dr Jean CATINEAU",
-  "Dr Alexandre FERRIERO",
-  "Dr Arthur FROHLICH",
-  "Dr Jean-Philippe GUERIN",
-  "Dr Sébastien GHIGLIONE",
-  "Dr Léa LEY-GHIGLIONE",
-  "Dr Lucile LEVASSEUR",
-  "Dr Riyad MENADE",
-  "Dr Nicolas OPPRECHT",
-  "Dr Nicolas PARTOUCHE",
-  "Pr Bertrand PRUNET",
-  "Dr Gildas ROUSSEAU",
-  "Dr Nicolo SALA",
-  "Dr Mathilde SEVERAC",
-  "Dr Wajdi SULTAN",
-  "Dr Daisy TRAN",
-  "Dr Rémy WIDEHEM",
-  "Dr Félix ZAMARON"
-];
+/* ANESTH */
+const anesthesistes = ["Dr ALBOUY","Dr BONNET","Dr FERRIERO"];
 
-/* ======================
-   DATA
-====================== */
 const data = {
-
-ortho: {
-gestes: {
-PTG: {label:"Prothèse totale de genou", cote:true},
-PTH: {label:"Prothèse totale de hanche", cote:true},
-PTE: {label:"Prothèse totale d'épaule", cote:true},
-"Arthroscopie genou": {label:"Arthroscopie genou"},
-"Arthroscopie épaule": {label:"Arthroscopie épaule"},
-"Canal carpien": {label:"Canal carpien", cote:true},
-"Clou gamma": {label:"Clou gamma", cote:true}
-},
-chirurgiens:[
-"Dr Matthieu GHREA",
-"Dr Nicolas GUILLOT",
-"Dr Hugo DARMANTE",
-"Dr Tristan LASCAR"
-].sort()
-},
-
-visc: {
-gestes: {
-"Lewis Santy": {label:"Lewis-Santy", commentaire:true},
-DPC: {label:"Duodénopancréatectomie céphalique"},
-Appendicectomie:{label:"Appendicectomie"},
-Cholécystectomie:{label:"Cholécystectomie"},
-"Hernie inguinale":{label:"Hernie inguinale", cote:true},
-"Segmentectomie hépatique":{label:"Segmentectomie hépatique", commentaire:true},
-"Hernie ligne blanche":{label:"Hernie ligne blanche"},
-"Gastrectomie partielle":{label:"Gastrectomie partielle"},
-"Colectomie gauche":{label:"Colectomie gauche"},
-"Colectomie droite":{label:"Colectomie droite"}
-},
-chirurgiens:[
-"Dr Adolfo GAVELLI",
-"Dr Anne DUBOIS-VERDIER",
-"Dr Anna MARMORALE",
-"Dr Hubert PERRIN",
-"Dr Nicoletta AMBROSIANI",
-"Pr Fabrizio PANARO"
-].sort()
-},
-
-uro:{gestes:{},chirurgiens:["Dr Aurélie FLOCH","Dr Maher KECHAOU","Dr Patrick-Julien TREACY","Dr Rafaelle CURSIO","Dr Xavier CARPENTIER"].sort()},
-
-endo:{gestes:{},chirurgiens:["Dr Alexandre CHARACHON","Dr Daniela AGREFILO","Dr Jean-François DEMARQUAY","Dr Juliette LAVEYSSIERE","Dr Luc DIEZ"].sort()},
-
-gyneco:{gestes:{},chirurgiens:["Dr Abdi BAFGHI","Dr Guillaume BENOIST","Dr Julia AUMIPHIN","Dr Reda DJAFER","Dr Wafaa EL LAAMOUCHI","Pr Bruno CARBONNE"].sort()}
-
+ortho:{gestes:{PTG:{label:"PTG",cote:true}},chirurgiens:["Dr GHREA","Dr GUILLOT"].sort()},
+visc:{gestes:{Appendicectomie:{label:"Appendicectomie"}},chirurgiens:["Dr PANARO"].sort()}
 };
 
-/* ======================
-   INIT
-====================== */
+/* INIT */
 function init(){
-let anes=document.getElementById("anesth");
-
-/* champ anesth VIDE par défaut */
+let a=document.getElementById("anesth");
 let empty=document.createElement("option");
-empty.value="";
-empty.text="-- Sélectionner --";
+empty.text="--";
 empty.selected=true;
-anes.add(empty);
+a.add(empty);
 
 anesthesistes.forEach(n=>{
-  anes.innerHTML+=`<option>${n}</option>`;
+a.innerHTML+=`<option>${n}</option>`;
 });
 }
 init();
 
-/* ======================
-   SPECIALITE
-====================== */
+/* SPECIALITE */
 document.getElementById("specialite").addEventListener("change",function(){
 
 let spec=this.value;
-
 let chir=document.getElementById("chirurgien");
 let geste=document.getElementById("geste");
 
 chir.innerHTML="";
 geste.innerHTML="";
 
-/* CHIR VIDE PAR DÉFAUT */
 let empty=document.createElement("option");
-empty.value="";
-empty.text="-- Sélectionner --";
+empty.text="--";
 empty.selected=true;
 chir.add(empty);
 
 if(!data[spec]) return;
 
-/* chirurgiens */
 data[spec].chirurgiens.forEach(c=>{
-  chir.innerHTML+=`<option>${c}</option>`;
+chir.innerHTML+=`<option>${c}</option>`;
 });
 
-/* gestes */
 Object.keys(data[spec].gestes).forEach(k=>{
 let opt=document.createElement("option");
 opt.value=k;
@@ -308,14 +231,11 @@ generer();
 
 });
 
-/* ======================
-   GESTE
-====================== */
+/* GESTE */
 document.getElementById("geste").addEventListener("change",function(){
 
 let spec=document.getElementById("specialite").value;
 let key=this.value;
-
 let g=data[spec]?.gestes?.[key];
 
 document.getElementById("coteBlock").style.display=g?.cote?"block":"none";
@@ -325,68 +245,55 @@ generer();
 
 });
 
-/* ======================
-   INCIDENTS
-====================== */
-function setAucunIncident(btn){
-btn.classList.toggle("active");
-document.getElementById("incidentLibre").value="";
-generer();
-}
-
-/* ======================
-   TOGGLE
-====================== */
+/* TOGGLE */
 function toggle(b){
 b.classList.toggle("active");
 generer();
 }
 
-/* ======================
-   GENERER
-====================== */
+/* ALR */
+function toggleALR(b){
+b.classList.toggle("active");
+document.getElementById("alrType").style.display=b.classList.contains("active")?"block":"none";
+generer();
+}
+
+/* GENERER */
 function generer(){
 
-let texte="Patient pris en charge au bloc opératoire.\n\n";
+let t="Patient pris en charge au bloc.\n\n";
 
-texte+="Date : "+document.getElementById("date").value+"\n";
-texte+="Chirurgien : "+document.getElementById("chirurgien").value+"\n";
-texte+="Anesthésiste : "+document.getElementById("anesth").value+"\n";
+t+="Date : "+date.value+"\n";
+t+="Chirurgien : "+chirurgien.value+"\n";
+t+="Anesthésiste : "+anesth.value+"\n";
 
-let spec=document.getElementById("specialite").value;
-let key=document.getElementById("geste").value;
+/* conditionnement */
+let cond=[];
+document.querySelectorAll(".card:nth-of-type(3) .option.active").forEach(b=>{
+if(["Scope","VVP","KTA","KTC","BIS","TOF"].includes(b.innerText)) cond.push(b.innerText);
+});
+if(cond.length) t+="Conditionnement : "+cond.join(", ")+"\n";
 
-if(data[spec]?.gestes?.[key]){
+/* induction */
+let ind=[];
+document.querySelectorAll(".card:nth-of-type(3) .option.active").forEach(b=>{
+if(["Propofol","Etomidate","Remifentanil","Sufentanil","Ketamine"].includes(b.innerText)) ind.push(b.innerText);
+});
+if(ind.length) t+="Induction : "+ind.join(", ")+"\n";
 
-let g=data[spec].gestes[key].label;
+/* ALR */
+let alrBtn=document.querySelector(".card:nth-of-type(3) .option.active");
+let alrType=document.getElementById("alrType").value;
 
-let cote=document.getElementById("cote").value;
-let com=document.getElementById("commentaire").value;
+if(alrBtn && alrType){
+t+="ALR : "+alrType+"\n";
+}
 
-if(cote) g+=" ("+cote+")";
-if(com) g+=" - "+com;
-
-texte+="Geste : "+g+"\n";
+document.getElementById("resultat").value=t;
 
 }
 
-/* incidents */
-let inc=document.getElementById("incidentLibre").value;
-let aucun=document.querySelector(".card:nth-of-type(4) .active");
-
-if(aucun){
-texte+="Aucun incident\n";
-}else if(inc){
-texte+="Incident : "+inc+"\n";
-}
-
-document.getElementById("resultat").value=texte;
-
-}
-
-/* ======================
-   COPIER
-====================== */
+/* COPY */
 function copier(){
 let t=document.getElementById("resultat");
 t.select();
