@@ -28,6 +28,7 @@ padding:10px;
 box-sizing:border-box;
 }
 
+/* PANELS */
 .panel{
 background:white;
 border-radius:10px;
@@ -44,6 +45,7 @@ margin:8px 0;
 font-size:14px;
 }
 
+/* LIGNES */
 .row{
 display:flex;
 flex-wrap:wrap;
@@ -62,17 +64,30 @@ font-size:12px;
 padding:4px;
 }
 
-textarea{
-font-size:12px;
-}
-
+/* PEROP */
 .perop-row{
 display:grid;
-grid-template-columns: 180px 1fr;
-margin-bottom:6px;
+grid-template-columns: 220px 1fr;
+margin-bottom:8px;
 align-items:center;
 }
 
+.checkbox-line{
+display:flex;
+flex-wrap:wrap;
+gap:10px;
+font-size:12px;
+}
+
+/* KTA / KTC BOX */
+.subbox{
+display:none;
+margin-left:15px;
+flex-direction:column;
+gap:5px;
+}
+
+/* OUTPUT */
 .output{
 white-space:pre-wrap;
 font-size:12px;
@@ -84,13 +99,7 @@ height:100%;
 overflow:auto;
 }
 
-.plus{
-background:#28a745;
-color:white;
-border:none;
-border-radius:50%;
-width:24px;
-height:24px;
+button{
 cursor:pointer;
 }
 </style>
@@ -125,7 +134,7 @@ cursor:pointer;
 
 </div>
 
-<!-- 🟨 GESTE (TOUT CONSERVÉ) -->
+<!-- 🟨 GESTE -->
 <div class="panel">
 
 <div class="section-title">Geste chirurgical</div>
@@ -144,28 +153,14 @@ cursor:pointer;
 <label>Côté</label>
 <select id="cote">
 <option value="">--</option>
-<option value="gauche">Gauche</option>
-<option value="droite">Droite</option>
+<option>Gauche</option>
+<option>Droite</option>
 </select>
 </div>
 
 <div class="row">
 <label>Commentaire</label>
 <input id="commentaire">
-</div>
-
-<button class="plus" onclick="ajouterGeste()">+</button>
-
-<div class="row" id="geste2Block" style="display:none;margin-top:6px;">
-<select id="geste2"></select>
-
-<select id="cote2">
-<option value="">--</option>
-<option value="gauche">Gauche</option>
-<option value="droite">Droite</option>
-</select>
-
-<input id="commentaire2">
 </div>
 
 </div>
@@ -175,7 +170,54 @@ cursor:pointer;
 
 <div class="section-title">Per-opératoire</div>
 
-<div class="perop-row">Conditionnement <input id="cond"></div>
+<div class="perop-row">
+Conditionnement
+
+<div class="checkbox-line">
+
+<label><input type="checkbox" id="scope"> Scope</label>
+<label><input type="checkbox" id="vvp"> VVP</label>
+
+<label><input type="checkbox" id="kta" onchange="toggleKTA()"> KTA</label>
+<label><input type="checkbox" id="ktc" onchange="toggleKTC()"> KTC</label>
+
+<label><input type="checkbox" id="bis"> BIS</label>
+<label><input type="checkbox" id="tof"> TOF</label>
+
+</div>
+</div>
+
+<!-- KTA -->
+<div class="subbox" id="ktaBox">
+<label>Site KTA</label>
+<select id="kta_site">
+<option>Fémoral</option>
+<option>Radial</option>
+</select>
+
+<label>Côté KTA</label>
+<select id="kta_cote">
+<option>Droit</option>
+<option>Gauche</option>
+</select>
+</div>
+
+<!-- KTC -->
+<div class="subbox" id="ktcBox">
+<label>Site KTC</label>
+<select id="ktc_site">
+<option>Jugulaire interne</option>
+<option>Fémoral</option>
+<option>Sous-clavier</option>
+</select>
+
+<label>Côté KTC</label>
+<select id="ktc_cote">
+<option>Droit</option>
+<option>Gauche</option>
+</select>
+</div>
+
 <div class="perop-row">Induction <input id="induction"></div>
 <div class="perop-row">Curare <input id="curare"></div>
 <div class="perop-row">Voies aériennes supérieures <input id="va"></div>
@@ -196,9 +238,9 @@ cursor:pointer;
 /* DATE */
 date.valueAsDate = new Date();
 
-/* =======================
-   🔵 TES DONNÉES ORIGINALES (INCHANGÉES)
-======================= */
+/* =========================
+   🔵 TES DONNÉES ORIGINALES (INTACTES)
+========================= */
 
 const anesthesistes=[
 "Dr Stéphanie ALBOUY","Dr Guy ARMANDO","Dr Laure BONNET","Dr Mohammed BOUREGBA",
@@ -300,10 +342,7 @@ const gestes={
 
 };
 
-/* =======================
-   INIT
-======================= */
-
+/* INIT */
 Object.keys(operateurs).forEach(s=>{
 specialite.innerHTML += `<option>${s}</option>`;
 });
@@ -312,61 +351,33 @@ anesthesistes.forEach(a=>{
 anesth.innerHTML += `<option>${a}</option>`;
 });
 
-/* =======================
-   SPECIALITE
-======================= */
+/* KTA / KTC */
+function toggleKTA(){
+ktaBox.style.display = kta.checked ? "flex" : "none";
+}
 
+function toggleKTC(){
+ktcBox.style.display = ktc.checked ? "flex" : "none";
+}
+
+/* SPECIALITE */
 specialite.addEventListener("change",()=>{
 
 let s = specialite.value;
 
-operateur.innerHTML = "<option>--</option>";
-(operateurs[s]||[]).forEach(o=>{
+operateur.innerHTML="";
+(gémap(operateurs[s]||[])).forEach(o=>{
 operateur.innerHTML += `<option>${o}</option>`;
 });
 
-chargerGestes(geste);
-
-geste.value="";
-cote.value="";
-commentaire.value="";
-geste2Block.style.display="none";
-
-generer();
+geste.innerHTML="";
+Object.keys(gestes[s]||{}).forEach(g=>{
+geste.innerHTML += `<option>${g}</option>`;
 });
 
-/* charger gestes */
-function chargerGestes(sel){
-let s = specialite.value;
-sel.innerHTML="";
-if(!gestes[s]) return;
-
-Object.keys(gestes[s]).forEach(g=>{
-sel.innerHTML += `<option>${g}</option>`;
 });
-}
 
-/* gestes */
-geste.addEventListener("change",()=>maj(geste,cote,commentaire));
-geste2.addEventListener("change",()=>maj(geste2,cote2,commentaire2));
-
-function maj(g,c,com){
-let s = specialite.value;
-let conf = gestes[s]?.[g.value] || {};
-c.style.display = conf.cote ? "inline" : "none";
-com.style.display = "inline";
-}
-
-/* ajout geste */
-function ajouterGeste(){
-geste2Block.style.display="block";
-chargerGestes(geste2);
-}
-
-/* =======================
-   GENERATION
-======================= */
-
+/* GENERATION */
 function generer(){
 
 let t="";
@@ -379,14 +390,18 @@ t+="GESTE : "+geste.value;
 if(cote.value) t+=" ("+cote.value+")";
 if(commentaire.value) t+=" - "+commentaire.value;
 
-if(geste2.value){
-t+=" + "+geste2.value;
-if(cote2.value) t+=" ("+cote2.value+")";
-if(commentaire2.value) t+=" - "+commentaire2.value;
-}
-
 t+="\n\n--- PER-OPERATOIRE ---\n";
-t+="Conditionnement : "+cond.value+"\n";
+
+let cond=[];
+if(scope.checked) cond.push("Scope");
+if(vvp.checked) cond.push("VVP");
+if(kta.checked) cond.push("KTA "+kta_site.value+" "+kta_cote.value);
+if(ktc.checked) cond.push("KTC "+ktc_site.value+" "+ktc_cote.value);
+if(bis.checked) cond.push("BIS");
+if(tof.checked) cond.push("TOF");
+
+t+="Conditionnement : "+cond.join(", ")+"\n";
+
 t+="Induction : "+induction.value+"\n";
 t+="Curare : "+curare.value+"\n";
 t+="Voies aériennes supérieures : "+va.value+"\n";
