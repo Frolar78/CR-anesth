@@ -34,7 +34,6 @@ h1 {
   border-radius: 10px;
   padding: 8px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  overflow: hidden;
 }
 
 h3 {
@@ -88,7 +87,7 @@ textarea {
 
 <div class="grid">
 
-<!-- PATIENT -->
+<!-- DATE / CHIR / ANESTH -->
 <div class="card">
 <h3>Date</h3>
 <input type="date" id="date">
@@ -100,7 +99,7 @@ textarea {
 <select id="anesth"></select>
 </div>
 
-<!-- SPECIALITE + GESTE -->
+<!-- SPECIALITE / GESTE -->
 <div class="card">
 <h3>Spécialité</h3>
 <select id="specialite">
@@ -160,10 +159,12 @@ textarea {
 
 <script>
 
+/* =========================
+   DONNÉES
+========================= */
+
 document.getElementById("date").valueAsDate = new Date();
 
-const data = {
-  
 const anesthesistes = [
   "Dr Stéphanie ALBOUY",
   "Dr Guy ARMANDO",
@@ -178,24 +179,26 @@ const anesthesistes = [
   "Dr Lucile LEVASSEUR",
   "Dr Riyad MENADE",
   "Dr Nicolas OPPRECHT",
-  "Dr Nicolas PARTOUCHE"
-  "Pr Bertrand PRUNET"
+  "Dr Nicolas PARTOUCHE",
+  "Pr Bertrand PRUNET",
   "Dr Gildas ROUSSEAU",
   "Dr Nicolo SALA",
   "Dr Mathilde SEVERAC",
   "Dr Wajdi SULTAN",
   "Dr Daisy TRAN",
   "Dr Rémy WIDEHEM",
-  "Dr Félix ZAMARON",
+  "Dr Félix ZAMARON"
 ];
+
+const data = {
 
 ortho: {
 gestes: {
 PTG: {label:"Prothèse totale de genou", cote:true},
 PTH: {label:"Prothèse totale de hanche", cote:true},
 PTE: {label:"Prothèse totale d'épaule", cote:true},
-"Arthroscopie genou": {label:"Arthroscopie genou", cote:false},
-"Arthroscopie épaule": {label:"Arthroscopie épaule", cote:false},
+"Arthroscopie genou": {label:"Arthroscopie genou"},
+"Arthroscopie épaule": {label:"Arthroscopie épaule"},
 "Canal carpien": {label:"Canal carpien", cote:true},
 "Clou gamma": {label:"Clou gamma", cote:true}
 },
@@ -226,75 +229,86 @@ endo:{gestes:{},chirurgiens:["Dr Simon"]}
 
 };
 
-// INIT
-function initSelects(){
+/* =========================
+   INIT
+========================= */
+
+function init(){
 
 let chir=document.getElementById("chirurgien");
 let anes=document.getElementById("anesth");
 
-// anesth
-anesthesistes.forEach(c=>{
-  anes.innerHTML += `<option>${c}</option>`;
+anesthesistes.forEach(n=>{
+  anes.innerHTML+=`<option>${n}</option>`;
 });
-}
-initSelects();
 
-// SPECIALITE
+}
+init();
+
+/* =========================
+   SPECIALITE
+========================= */
+
 document.getElementById("specialite").addEventListener("change",function(){
 
 let spec=this.value;
-let g=document.getElementById("geste");
-g.innerHTML="";
+
+let chir=document.getElementById("chirurgien");
+let geste=document.getElementById("geste");
+
+chir.innerHTML="";
+geste.innerHTML="";
 
 if(!data[spec]) return;
 
+/* chirurgiens */
+data[spec].chirurgiens.forEach(c=>{
+  chir.innerHTML+=`<option>${c}</option>`;
+});
+
+/* gestes */
 Object.keys(data[spec].gestes).forEach(k=>{
 let opt=document.createElement("option");
 opt.value=k;
 opt.text=data[spec].gestes[k].label;
-g.add(opt);
-
-let chir=document.getElementById("chirurgien");
-chir.innerHTML="";
-
-if(data[spec] && data[spec].chirurgiens){
-  data[spec].chirurgiens.forEach(c=>{
-    let opt=document.createElement("option");
-    opt.text=c;
-    chir.add(opt);
-  });
-}
+geste.add(opt);
 });
 
 generer();
+
 });
 
-// GESTE
+/* =========================
+   GESTE
+========================= */
+
 document.getElementById("geste").addEventListener("change",function(){
 
 let spec=document.getElementById("specialite").value;
 let key=this.value;
 
-let c=document.getElementById("coteBlock");
-let cm=document.getElementById("commentaireBlock");
+let g=data[spec]?.gestes?.[key];
 
-if(!data[spec])return;
-
-let g=data[spec].gestes[key];
-
-c.style.display=g?.cote?"block":"none";
-cm.style.display=g?.commentaire?"block":"none";
+document.getElementById("coteBlock").style.display=g?.cote?"block":"none";
+document.getElementById("commentaireBlock").style.display=g?.commentaire?"block":"none";
 
 generer();
+
 });
 
-// TOGGLE
+/* =========================
+   TOGGLE
+========================= */
+
 function toggle(b){
 b.classList.toggle("active");
 generer();
 }
 
-// GENERER
+/* =========================
+   GENERER
+========================= */
+
 function generer(){
 
 let texte="Patient pris en charge au bloc opératoire.\n\n";
@@ -306,29 +320,36 @@ texte+="Anesthésiste : "+document.getElementById("anesth").value+"\n";
 let spec=document.getElementById("specialite").value;
 let key=document.getElementById("geste").value;
 
-if(data[spec]&&data[spec].gestes[key]){
+if(data[spec]?.gestes?.[key]){
 
 let g=data[spec].gestes[key].label;
+
 let cote=document.getElementById("cote").value;
 let com=document.getElementById("commentaire").value;
 
-if(cote)g+=" ("+cote+")";
-if(com)g+=" - "+com;
+if(cote) g+=" ("+cote+")";
+if(com) g+=" - "+com;
 
 texte+="Geste : "+g+"\n";
+
 }
 
 let tech=[];
 document.querySelectorAll(".card:nth-of-type(3) .active").forEach(b=>tech.push(b.innerText));
-if(tech.length)texte+="Technique : "+tech.join(", ")+"\n";
+if(tech.length) texte+="Technique : "+tech.join(", ")+"\n";
 
 let inc=[];
 document.querySelectorAll(".card:nth-of-type(4) .active").forEach(b=>inc.push(b.innerText));
-if(inc.includes("Aucun"))texte+="Aucun incident\n";
-else if(inc.length)texte+="Incidents : "+inc.join(", ")+"\n";
+if(inc.includes("Aucun")) texte+="Aucun incident\n";
+else if(inc.length) texte+="Incidents : "+inc.join(", ")+"\n";
 
 document.getElementById("resultat").value=texte;
+
 }
+
+/* =========================
+   COPIER
+========================= */
 
 function copier(){
 let t=document.getElementById("resultat");
@@ -337,7 +358,9 @@ document.execCommand("copy");
 alert("Copié !");
 }
 
-document.querySelectorAll("select,button").forEach(e=>e.addEventListener("change",generer));
+document.querySelectorAll("select,button").forEach(e=>{
+e.addEventListener("change",generer);
+});
 
 </script>
 
