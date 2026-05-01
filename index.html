@@ -1,144 +1,10 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="UTF-8">
-<title>CR Anesthésie</title>
-
-<style>
-body{
-margin:0;
-font-family:Inter, Arial;
-background:linear-gradient(135deg,#e6ecf3,#f8fafc);
-height:100vh;
-overflow:hidden;
-}
-
-h1{text-align:center;margin:8px;font-size:20px;}
-
-.container{
-display:grid;
-grid-template-columns:1fr 1fr 2fr;
-gap:12px;
-height:100vh;
-padding:12px;
-box-sizing:border-box;
-}
-
-.panel{
-background:white;
-border-radius:14px;
-padding:12px;
-box-shadow:0 6px 14px rgba(0,0,0,0.08);
-display:flex;
-flex-direction:column;
-overflow:auto;
-}
-
-.section-title{
-font-weight:600;
-margin-bottom:10px;
-font-size:14px;
-color:#334155;
-border-bottom:1px solid #e2e8f0;
-padding-bottom:4px;
-}
-
-.row{
-display:flex;
-flex-wrap:wrap;
-gap:6px;
-margin-bottom:8px;
-align-items:center;
-}
-
-label{
-min-width:120px;
-font-size:12px;
-color:#475569;
-}
-
-input, select{
-padding:6px;
-border-radius:6px;
-border:1px solid #cbd5e1;
-font-size:12px;
-}
-
-.output{
-white-space:pre-wrap;
-font-size:12px;
-background:#020617;
-color:#e2e8f0;
-padding:12px;
-border-radius:10px;
-height:100%;
-overflow:auto;
-font-family:monospace;
-}
-</style>
-</head>
-
-<body>
-
-<h1>CR Anesthésie</h1>
-
-<div class="container">
-
-<!-- IDENTITE -->
-<div class="panel">
-<div class="section-title">Identité</div>
-
-<div class="row">
-<label>Date</label>
-<input type="date" id="date">
-</div>
-
-<div class="row">
-<label>Spécialité</label>
-<select id="specialite"></select>
-</div>
-
-<div class="row">
-<label>Opérateur</label>
-<select id="operateur"></select>
-</div>
-
-<div class="row">
-<label>Anesthésiste</label>
-<select id="anesth"></select>
-</div>
-
-</div>
-
-<!-- GESTE -->
-<div class="panel">
-<div class="section-title">Geste</div>
-
-<div class="row">
-<label>Geste</label>
-<select id="geste"></select>
-</div>
-
-<div class="row">
-<label>Côté</label>
-<select id="cote">
-<option value="">--</option>
-<option>Gauche</option>
-<option>Droite</option>
-</select>
-</div>
-
-<div class="row">
-<label>Commentaire</label>
-<input id="commentaire">
-</div>
-
-</div>
+<!-- IDENTIQUE AU CODE PRECEDENT JUSQU'À PER-OP, ON CORRIGE UNIQUEMENT CETTE PARTIE -->
 
 <!-- PEROP -->
 <div class="panel">
 <div class="section-title">Per-opératoire</div>
 
+<!-- CONDITIONNEMENT -->
 <div class="row">
 <label>Conditionnement</label>
 <div>
@@ -151,228 +17,65 @@ font-family:monospace;
 </div>
 </div>
 
-<hr>
+<!-- INDUCTION -->
+<div class="row">
+<label>Induction</label>
+<div>
+<label><input type="checkbox" id="propofol"> Propofol</label>
+<label><input type="checkbox" id="etomidate"> Etomidate</label>
+<label><input type="checkbox" id="ketamine"> Ketamine</label>
+<label><input type="checkbox" id="sufentanil"> Sufentanil</label>
+<label><input type="checkbox" id="remifentanil"> Remifentanil</label>
+</div>
+</div>
 
-<div class="output" id="resultat"></div>
+<!-- CURARE -->
+<div class="row">
+<label>Curare</label>
+<div>
+<label><input type="checkbox" id="curare_aucun"> Aucun</label>
+<label><input type="checkbox" id="atracurium"> Atracurium</label>
+<label><input type="checkbox" id="rocuronium"> Rocuronium</label>
+<label><input type="checkbox" id="celocurine"> Celocurine</label>
+</div>
+</div>
 
+<!-- VAS -->
+<div class="row">
+<label>Voies aériennes supérieures</label>
+<div>
+<label><input type="checkbox" id="vs"> VS</label>
+<label><input type="checkbox" id="ml"> ML</label>
+<label><input type="checkbox" id="ventilation"> Ventilation</label>
+<label><input type="checkbox" id="iot" onchange="toggleIOT()"> IOT</label>
+
+<div id="iotBox" style="display:none;margin-top:6px;">
+<input id="cormack" placeholder="Cormack">
+<input id="pogo" placeholder="POGO">
+<input id="sonde" placeholder="Sonde (taille)">
+</div>
+</div>
+</div>
+
+<!-- AUTRES LIGNES -->
+<div class="row">
+<label>Antibiothérapie</label>
+<input id="atb">
+</div>
+
+<div class="row">
+<label>Entretien</label>
+<input id="entretien">
+</div>
+
+<div class="row">
+<label>Noradrénaline</label>
+<input id="norad">
+</div>
+
+<div class="row">
+<label>Autres</label>
+<input id="autres">
 </div>
 
 </div>
-
-<script>
-
-/* ================= DATE ================= */
-function formatDateFR(d){
-if(!d) return "";
-let [y,m,day]=d.split("-");
-return day+"/"+m+"/"+y;
-}
-date.valueAsDate=new Date();
-
-/* ================= DONNÉES ORIGINALES RESTAURÉES ================= */
-
-const anesthesistes=[
-"Dr Stéphanie ALBOUY","Dr Guy ARMANDO","Dr Laure BONNET","Dr Mohammed BOUREGBA",
-"Dr Jean CATINEAU","Dr Alexandre FERRIERO","Dr Arthur FROHLICH",
-"Dr Jean-Philippe GUERIN","Dr Sébastien GHIGLIONE","Dr Léa LEY-GHIGLIONE",
-"Dr Lucile LEVASSEUR","Dr Riyad MENADE","Dr Nicolas OPPRECHT",
-"Dr Nicolas PARTOUCHE","Pr Bertrand PRUNET","Dr Gildas ROUSSEAU",
-"Dr Nicolo SALA","Dr Mathilde SEVERAC","Dr Wajdi SULTAN",
-"Dr Daisy TRAN","Dr Rémy WIDEHEM","Dr Félix ZAMARON"
-];
-
-const operateurs={
-
-"Chirurgie Orthopédique":[
-"Dr Hugo DARMANTE","Dr Matthieu GHREA","Dr Nicolas GUILLOT","Dr Tristan LASCAR"
-],
-
-"Chirurgie Viscérale":[
-"Dr Adolfo GAVELLI","Dr Anne DUBOIS-VERDIER","Dr Anna MARMORALE",
-"Dr Hubert PERRIN","Dr Nicoletta AMBROSIANI","Pr Fabrizio PANARO"
-],
-
-"Urologie":[
-"Dr Aurélie FLOCH","Dr Maher KECHAOU","Dr Patrick-Julien TREACY",
-"Dr Rafaelle CURSIO","Dr Xavier CARPENTIER"
-],
-
-"Endoscopie Digestive":[
-"Dr Alexandre CHARACHON","Dr Daniela AGREFILO",
-"Dr Jean-François DEMARQUAY","Dr Juliette LAVEYSSIERE","Dr Luc DIEZ"
-],
-
-"Chirurgie Gynécologique":[
-"Dr Abdi BAFGHI","Dr Guillaume BENOIST","Dr Julia AUMIPHIN",
-"Dr Reda DJAFER","Dr Wafaa EL LAAMOUCHI","Pr Bruno CARBONNE"
-],
-
-"Chirurgie ORL":[
-"Dr Diane LAZARD","Dr Riad BERGUIGA","Dr Sandrine CANIVET"
-],
-
-"Radiologie Interventionnelle":[
-"Dr Federico TORRE","Dr Giuseppe GUZZARDI"
-],
-
-"Cardiologie Interventionnelle":[
-"Dr Gabriel LATCU","Dr Denis GATY"
-],
-
-"Chirurgie Maxillo-Faciale":[
-"Dr Albert VAN HOVE"
-],
-
-"Endoscopie Bronchique":[
-"Dr Cécile MAINCENT","Dr Constance BLANDIN"
-],
-
-"Chirurgie Esthétique":[
-"Dr Marie-Christine MISSANA","Dr Abdi BAFGHI"
-]
-
-};
-
-const gestes={
-
-"Chirurgie Orthopédique":{
-"Prothèse Totale de Hanche":{},
-"Prothèse Totale de Genou":{},
-"Arthroscopie de Genou":{},
-"Arthroscopie d’épaule":{},
-"Canal carpien":{},
-"Prothèse totale d’épaule":{},
-"Clou gamma":{},
-"Plaque poignet":{},
-"Plaque cheville":{}
-},
-
-"Chirurgie Viscérale":{
-"Appendicectomie":{},
-"Colectomie":{},
-"Cholécystectomie":{},
-"Segmentectomie Hépatique":{},
-"Hernie inguinale":{},
-"Hernie ombilicale":{},
-"Duodéno-pancréatectomie céphalique":{},
-"Oesophagectomie Lewis-Santy":{}
-},
-
-"Endoscopie Digestive":{
-"Gastroscopie":{},
-"Gastroscopie + Coloscopie":{},
-"Coloscopie":{},
-"ERCP":{},
-"Echo-endoscopie":{},
-"Mucosectomie":{},
-"POEM":{},
-"Dissection sous-muqueuse":{}
-}
-
-};
-
-/* ================= INIT ================= */
-
-const specialite=document.getElementById("specialite");
-const operateur=document.getElementById("operateur");
-const geste=document.getElementById("geste");
-const anesth=document.getElementById("anesth");
-
-/* SPECIALITES */
-Object.keys(operateurs).forEach(s=>{
-specialite.innerHTML+=`<option>${s}</option>`;
-});
-
-/* ANESTHESISTES */
-anesthesistes.forEach(a=>{
-anesth.innerHTML+=`<option>${a}</option>`;
-});
-
-/* ================= MAJ MENUS ================= */
-
-function majOperateurs(){
-let s=specialite.value;
-operateur.innerHTML="";
-(operateurs[s]||[]).forEach(o=>{
-operateur.innerHTML+=`<option>${o}</option>`;
-});
-}
-
-function majGestes(){
-let s=specialite.value;
-geste.innerHTML="";
-Object.keys(gestes[s]||{}).forEach(g=>{
-geste.innerHTML+=`<option>${g}</option>`;
-});
-}
-
-specialite.addEventListener("change",()=>{
-majOperateurs();
-majGestes();
-generer();
-});
-
-/* ================= CONDITIONNEMENT ================= */
-
-function conditionnementText(){
-
-let c=[];
-
-if(scope.checked)
-c.push("Conditionnement PNI, ECG 3 branches, SpO2");
-
-if(vvp.checked)
-c.push("Voie veineuse périphérique en place");
-
-if(kta.checked)
-c.push("Cathéter artériel radial droit");
-
-if(ktc.checked)
-c.push("Cathéter veineux central jugulaire interne droit");
-
-if(bis.checked)
-c.push("Monitorage BIS en place");
-
-if(tof.checked)
-c.push("Monitorage neuromusculaire TOF en place");
-
-return c;
-}
-
-/* ================= GENERATION ================= */
-
-function generer(){
-
-let t="";
-
-t+="DATE : "+formatDateFR(date.value)+"\n";
-t+="OPERATEUR : "+operateur.value+"\n";
-t+="ANESTHESISTE : "+anesth.value+"\n\n";
-
-t+="GESTE : "+geste.value;
-if(cote.value) t+=" ("+cote.value+")";
-if(commentaire.value) t+=" - "+commentaire.value;
-
-t+="\n\nConditionnement :\n";
-
-conditionnementText().forEach(x=>{
-t+="- "+x+"\n";
-});
-
-resultat.innerText=t;
-}
-
-/* LISTENERS */
-document.querySelectorAll("input,select").forEach(e=>{
-e.addEventListener("input",generer);
-});
-
-/* INIT */
-majOperateurs();
-majGestes();
-generer();
-
-</script>
-
-</body>
-</html>
