@@ -159,12 +159,14 @@ textarea {
 
 <script>
 
-/* =========================
-   DONNÉES
-========================= */
-
+/* ======================
+   DATE
+====================== */
 document.getElementById("date").valueAsDate = new Date();
 
+/* ======================
+   ANESTHÉSISTES
+====================== */
 const anesthesistes = [
   "Dr Stéphanie ALBOUY",
   "Dr Guy ARMANDO",
@@ -190,6 +192,9 @@ const anesthesistes = [
   "Dr Félix ZAMARON"
 ];
 
+/* ======================
+   DATA COMPLET
+====================== */
 const data = {
 
 ortho: {
@@ -202,7 +207,12 @@ PTE: {label:"Prothèse totale d'épaule", cote:true},
 "Canal carpien": {label:"Canal carpien", cote:true},
 "Clou gamma": {label:"Clou gamma", cote:true}
 },
-chirurgiens:["Dr Martin","Dr Dupont"]
+chirurgiens:[
+"Dr Matthieu GHREA",
+"Dr Nicolas GUILLOT",
+"Dr Hugo DARMANTE",
+"Dr Tristan LASCAR"
+].sort()
 },
 
 visc: {
@@ -218,37 +228,70 @@ Cholécystectomie:{label:"Cholécystectomie"},
 "Colectomie gauche":{label:"Colectomie gauche"},
 "Colectomie droite":{label:"Colectomie droite"}
 },
-chirurgiens:["Dr Bernard","Dr Leroy"]
+chirurgiens:[
+"Dr Adolfo GAVELLI",
+"Dr Anne DUBOIS-VERDIER",
+"Dr Anna MARMORALE",
+"Dr Hubert PERRIN",
+"Dr Nicoletta AMBROSIANI",
+"Pr Fabrizio PANARO"
+].sort()
+},
+
+uro:{
+gestes:{},
+chirurgiens:[
+"Dr Aurélie FLOCH",
+"Dr Maher KECHAOU",
+"Dr Patrick-Julien TREACY",
+"Dr Rafaelle CURSIO",
+"Dr Xavier CARPENTIER"
+].sort()
+},
+
+endo:{
+gestes:{},
+chirurgiens:[
+"Dr Alexandre CHARACHON",
+"Dr Daniela AGREFILO",
+"Dr Jean-François DEMARQUAY",
+"Dr Juliette LAVEYSSIERE",
+"Dr Luc DIEZ"
+].sort()
+},
+
+gyneco:{
+gestes:{},
+chirurgiens:[
+"Dr Abdi BAFGHI",
+"Dr Guillaume BENOIST",
+"Dr Julia AUMIPHIN",
+"Dr Reda DJAFER",
+"Dr Wafaa EL LAAMOUCHI",
+"Pr Bruno CARBONNE"
+].sort()
 },
 
 vasc:{gestes:{},chirurgiens:["Dr Petit"]},
-uro:{gestes:{},chirurgiens:["Dr Girard"]},
-thor:{gestes:{},chirurgiens:["Dr Roux"]},
-gyneco:{gestes:{},chirurgiens:["Dr Blanc"]},
-endo:{gestes:{},chirurgiens:["Dr Simon"]}
+thor:{gestes:{},chirurgiens:["Dr Roux"]}
 
 };
 
-/* =========================
+/* ======================
    INIT
-========================= */
-
+====================== */
 function init(){
-
-let chir=document.getElementById("chirurgien");
 let anes=document.getElementById("anesth");
 
 anesthesistes.forEach(n=>{
   anes.innerHTML+=`<option>${n}</option>`;
 });
-
 }
 init();
 
-/* =========================
+/* ======================
    SPECIALITE
-========================= */
-
+====================== */
 document.getElementById("specialite").addEventListener("change",function(){
 
 let spec=this.value;
@@ -262,6 +305,12 @@ geste.innerHTML="";
 if(!data[spec]) return;
 
 /* chirurgiens */
+let empty=document.createElement("option");
+empty.value="";
+empty.text="-- Sélectionner --";
+empty.selected=true;
+chir.add(empty);
+
 data[spec].chirurgiens.forEach(c=>{
   chir.innerHTML+=`<option>${c}</option>`;
 });
@@ -278,10 +327,9 @@ generer();
 
 });
 
-/* =========================
+/* ======================
    GESTE
-========================= */
-
+====================== */
 document.getElementById("geste").addEventListener("change",function(){
 
 let spec=document.getElementById("specialite").value;
@@ -296,19 +344,17 @@ generer();
 
 });
 
-/* =========================
+/* ======================
    TOGGLE
-========================= */
-
+====================== */
 function toggle(b){
 b.classList.toggle("active");
 generer();
 }
 
-/* =========================
+/* ======================
    GENERER
-========================= */
-
+====================== */
 function generer(){
 
 let texte="Patient pris en charge au bloc opératoire.\n\n";
@@ -334,33 +380,19 @@ texte+="Geste : "+g+"\n";
 
 }
 
-let tech=[];
-document.querySelectorAll(".card:nth-of-type(3) .active").forEach(b=>tech.push(b.innerText));
-if(tech.length) texte+="Technique : "+tech.join(", ")+"\n";
-
-let inc=[];
-document.querySelectorAll(".card:nth-of-type(4) .active").forEach(b=>inc.push(b.innerText));
-if(inc.includes("Aucun")) texte+="Aucun incident\n";
-else if(inc.length) texte+="Incidents : "+inc.join(", ")+"\n";
-
 document.getElementById("resultat").value=texte;
 
 }
 
-/* =========================
+/* ======================
    COPIER
-========================= */
-
+====================== */
 function copier(){
 let t=document.getElementById("resultat");
 t.select();
 document.execCommand("copy");
 alert("Copié !");
 }
-
-document.querySelectorAll("select,button").forEach(e=>{
-e.addEventListener("change",generer);
-});
 
 </script>
 
