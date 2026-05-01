@@ -6,34 +6,51 @@
 
 <style>
 body {
+  margin: 0;
   font-family: Arial;
   background: #f2f4f8;
-  margin: 0;
-  padding: 15px;
+  height: 100vh;
+  overflow: hidden;
 }
 
 h1 {
   text-align: center;
+  margin: 10px 0;
+  font-size: 20px;
 }
 
+/* GRID PRINCIPALE */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 10px;
+  height: calc(100vh - 60px);
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+/* CARTES */
 .card {
   background: white;
-  padding: 15px;
-  margin-bottom: 12px;
-  border-radius: 12px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  border-radius: 10px;
+  padding: 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  overflow: hidden;
 }
 
-select, input {
-  width: 100%;
-  padding: 8px;
-  margin-top: 5px;
+/* TEXTES COMPACTS */
+h3 {
+  margin: 5px 0;
+  font-size: 14px;
 }
 
+/* BOUTONS */
 button.option {
-  padding: 8px;
-  margin: 4px;
-  border-radius: 8px;
+  padding: 6px;
+  margin: 2px;
+  font-size: 12px;
+  border-radius: 6px;
   border: 1px solid #ccc;
   background: white;
   cursor: pointer;
@@ -44,23 +61,30 @@ button.option.active {
   color: white;
 }
 
+/* SELECTS */
+select, input {
+  width: 100%;
+  padding: 5px;
+  font-size: 12px;
+  margin-top: 3px;
+}
+
+/* RESULTAT */
 textarea {
   width: 100%;
-  margin-top: 10px;
+  height: 100%;
+  font-size: 12px;
 }
 
-.main-btn {
-  width: 100%;
-  padding: 12px;
-  margin-top: 10px;
-  border-radius: 10px;
-  border: none;
-  font-size: 16px;
-}
-
+/* BOUTON COPIER */
 .copy {
+  width: 100%;
+  padding: 8px;
   background: #007bff;
   color: white;
+  border: none;
+  margin-top: 5px;
+  border-radius: 8px;
 }
 </style>
 
@@ -70,48 +94,39 @@ textarea {
 
 <h1>CR Anesthésie</h1>
 
-<!-- DATE -->
+<div class="grid">
+
+<!-- DATE + INTERVENANTS -->
 <div class="card">
 <h3>Date</h3>
 <input type="date" id="date">
-</div>
 
-<!-- PRATICIENS -->
-<div class="card">
-<h3>Intervenants</h3>
-
-<label>Chirurgien :</label>
+<h3>Chirurgien</h3>
 <select id="chirurgien">
   <option>Dr Dupont</option>
   <option>Dr Martin</option>
   <option>Dr Durand</option>
 </select>
 
-<label>Anesthésiste :</label>
+<h3>Anesthésiste</h3>
 <select id="anesth">
   <option>Dr Bernard</option>
   <option>Dr Petit</option>
   <option>Dr Leroy</option>
 </select>
-
 </div>
 
 <!-- GESTE -->
 <div class="card">
 <h3>Geste</h3>
 
-<label>Spécialité :</label>
 <select id="specialite">
-  <option value="">--Choisir--</option>
+  <option value="">Spécialité</option>
   <option value="ortho">Orthopédie</option>
   <option value="digestif">Digestif</option>
 </select>
 
-<label>Acte :</label>
-<select id="geste">
-  <option value="">--Choisir--</option>
-</select>
-
+<select id="geste"></select>
 </div>
 
 <!-- TECHNIQUE -->
@@ -120,7 +135,7 @@ textarea {
 <button class="option" onclick="toggle(this)">AG</button>
 <button class="option" onclick="toggle(this)">ALR</button>
 <button class="option" onclick="toggle(this)">Intubation</button>
-<button class="option" onclick="toggle(this)">Masque laryngé</button>
+<button class="option" onclick="toggle(this)">ML</button>
 </div>
 
 <!-- INCIDENTS -->
@@ -132,107 +147,81 @@ textarea {
 </div>
 
 <!-- RESULTAT -->
-<div class="card">
+<div class="card" style="grid-column: span 3;">
 <h3>Compte rendu</h3>
-<textarea id="resultat" rows="12"></textarea>
-<button class="main-btn copy" onclick="copier()">Copier</button>
+<textarea id="resultat"></textarea>
+<button class="copy" onclick="copier()">Copier</button>
+</div>
+
 </div>
 
 <script>
 
-// DATE AUTO
 document.getElementById("date").valueAsDate = new Date();
 
-// GESTES PAR SPECIALITE
 const gestes = {
   ortho: ["PTH", "PTG", "Arthroscopie genou"],
   digestif: ["Appendicectomie", "Cholécystectomie"]
 };
 
-// UPDATE GESTES
 document.getElementById("specialite").addEventListener("change", function() {
   let spec = this.value;
   let select = document.getElementById("geste");
 
-  select.innerHTML = '<option value="">--Choisir--</option>';
+  select.innerHTML = "";
 
   if (!gestes[spec]) return;
 
-  gestes[spec].forEach(function(g) {
-    let option = document.createElement("option");
-    option.text = g;
-    option.value = g;
-    select.add(option);
+  gestes[spec].forEach(g => {
+    let opt = document.createElement("option");
+    opt.text = g;
+    select.add(opt);
   });
 
   generer();
 });
 
-// BOUTONS
 function toggle(btn) {
   btn.classList.toggle("active");
   generer();
 }
 
-// GENERATION
 function generer() {
-
-  let date = document.getElementById("date").value;
-  let chirurgien = document.getElementById("chirurgien").value;
-  let anesth = document.getElementById("anesth").value;
-  let geste = document.getElementById("geste").value;
 
   let texte = "";
 
-  // TRAME FIXE
   texte += "Patient pris en charge au bloc opératoire.\n";
-  texte += "Monitorage standard mis en place.\n\n";
+  texte += "Monitorage standard.\n\n";
 
-  // INFOS
-  if (date) texte += "Date : " + date + "\n";
-  if (chirurgien) texte += "Chirurgien : " + chirurgien + "\n";
-  if (anesth) texte += "Anesthésiste : " + anesth + "\n";
-  if (geste) texte += "Intervention : " + geste + "\n";
+  texte += "Date : " + document.getElementById("date").value + "\n";
+  texte += "Chirurgien : " + document.getElementById("chirurgien").value + "\n";
+  texte += "Anesthésiste : " + document.getElementById("anesth").value + "\n";
+  texte += "Geste : " + document.getElementById("geste").value + "\n\n";
 
-  texte += "\n";
-
-  // TECHNIQUE
   let tech = [];
-  document.querySelectorAll(".card:nth-of-type(4) .active").forEach(function(b) {
-    tech.push(b.innerText);
-  });
+  document.querySelectorAll(".card:nth-of-type(3) .active").forEach(b => tech.push(b.innerText));
+  if (tech.length) texte += "Technique : " + tech.join(", ") + ".\n\n";
 
-  if (tech.length > 0) {
-    texte += "Technique : " + tech.join(", ") + ".\n";
-  }
+  let inc = [];
+  document.querySelectorAll(".card:nth-of-type(4) .active").forEach(b => inc.push(b.innerText));
 
-  // INCIDENTS
-  let incidents = [];
-  document.querySelectorAll(".card:nth-of-type(5) .active").forEach(function(b) {
-    incidents.push(b.innerText);
-  });
-
-  if (incidents.includes("Aucun")) {
-    texte += "Aucun incident per-opératoire.\n";
-  } else if (incidents.length > 0) {
-    texte += "Incidents : " + incidents.join(", ") + ".\n";
+  if (inc.includes("Aucun")) {
+    texte += "Aucun incident.\n";
+  } else if (inc.length) {
+    texte += "Incidents : " + inc.join(", ") + ".\n";
   }
 
   document.getElementById("resultat").value = texte;
 }
 
-// COPIER
 function copier() {
-  let texte = document.getElementById("resultat");
-  texte.select();
+  let t = document.getElementById("resultat");
+  t.select();
   document.execCommand("copy");
   alert("Copié !");
 }
 
-// AUTO UPDATE
-document.querySelectorAll("select, input").forEach(function(el) {
-  el.addEventListener("change", generer);
-});
+document.querySelectorAll("select").forEach(e => e.addEventListener("change", generer));
 
 </script>
 
