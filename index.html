@@ -253,6 +253,17 @@ let opt=document.createElement("option");
 opt.value=k;
 opt.text=data[spec].gestes[k].label;
 g.add(opt);
+
+let chir=document.getElementById("chirurgien");
+chir.innerHTML="";
+
+if(data[spec] && data[spec].chirurgiens){
+  data[spec].chirurgiens.forEach(c=>{
+    let opt=document.createElement("option");
+    opt.text=c;
+    chir.add(opt);
+  });
+}
 });
 
 generer();
