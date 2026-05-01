@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Compte rendu anesthésie</title>
+
+<style>
+body {
+  font-family: Arial;
+  margin: 40px;
+  max-width: 900px;
+}
+
+h2 {
+  border-bottom: 2px solid #ccc;
+}
+
+.section {
+  margin-bottom: 20px;
+}
+
+textarea {
+  width: 100%;
+}
+
+button {
+  padding: 10px;
+  margin-top: 10px;
+  cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Générateur de compte rendu anesthésie</h1>
+
+<div class="section">
+<h2>Patient</h2>
+
+<label>ASA :</label>
+<select id="asa">
+  <option>ASA I</option>
+  <option>ASA II</option>
+  <option>ASA III</option>
+  <option>ASA IV</option>
+</select>
+
+<br><br>
+
+<label>Allergies :</label>
+<input type="checkbox" id="allergie"> Oui
+<input type="text" id="detailAllergie" placeholder="Préciser">
+
+</div>
+
+<div class="section">
+<h2>Technique</h2>
+
+<input type="checkbox" id="ag"> Anesthésie générale<br>
+<input type="checkbox" id="alr"> ALR<br>
+<input type="checkbox" id="sedation"> Sédation<br>
+
+<br>
+
+<label>Intubation :</label>
+<input type="checkbox" id="intub"> Oui
+
+</div>
+
+<div class="section">
+<h2>Monitoring</h2>
+
+<input type="checkbox" id="standard" checked> Standard<br>
+<input type="checkbox" id="kta"> KT artériel<br>
+<input type="checkbox" id="vvp"> VVP<br>
+
+</div>
+
+<div class="section">
+<h2>Incidents</h2>
+
+<input type="checkbox" id="aucunIncident"> Aucun<br>
+<input type="checkbox" id="hypo"> Hypotension<br>
+<input type="checkbox" id="desat"> Désaturation<br>
+
+</div>
+
+<div class="section">
+<h2>Conclusion</h2>
+
+<label>État en SSPI :</label>
+<input type="text" id="conclusion" placeholder="Stable, réveil simple...">
+
+</div>
+
+<button onclick="generer()">Générer</button>
+<button onclick="copier()">Copier</button>
+
+<h2>Compte rendu :</h2>
+
+<textarea id="resultat" rows="15"></textarea>
+
+<script>
+function generer() {
+
+  let texte = "";
+
+  // PATIENT
+  let asa = document.getElementById("asa").value;
+  texte += "Patient classé " + asa + ". ";
+
+  if (document.getElementById("allergie").checked) {
+    let detail = document.getElementById("detailAllergie").value;
+    texte += "Allergies connues : " + detail + ". ";
+  } else {
+    texte += "Pas d'allergie connue. ";
+  }
+
+  texte += "\n\n";
+
+  // TECHNIQUE
+  if (document.getElementById("ag").checked) {
+    texte += "Anesthésie générale réalisée. ";
+  }
+
+  if (document.getElementById("alr").checked) {
+    texte += "ALR associée. ";
+  }
+
+  if (document.getElementById("sedation").checked) {
+    texte += "Sédation réalisée. ";
+  }
+
+  if (document.getElementById("intub").checked) {
+    texte += "Intubation orotrachéale. ";
+  }
+
+  texte += "\n\n";
+
+  // MONITORING
+  texte += "Monitoring : ";
+
+  if (document.getElementById("standard").checked) {
+    texte += "standard ";
+  }
+
+  if (document.getElementById("kta").checked) {
+    texte += "+ KT artériel ";
+  }
+
+  if (document.getElementById("vvp").checked) {
+    texte += "+ VVP ";
+  }
+
+  texte += ".\n\n";
+
+  // INCIDENTS
+  if (document.getElementById("aucunIncident").checked) {
+    texte += "Aucun incident per-opératoire.\n\n";
+  } else {
+    if (document.getElementById("hypo").checked) {
+      texte += "Épisode d'hypotension. ";
+    }
+
+    if (document.getElementById("desat").checked) {
+      texte += "Désaturation transitoire. ";
+    }
+
+    texte += "\n\n";
+  }
+
+  // CONCLUSION
+  let conclusion = document.getElementById("conclusion").value;
+  texte += "Évolution en SSPI : " + conclusion + ".";
+
+  document.getElementById("resultat").value = texte;
+}
+
+function copier() {
+  let texte = document.getElementById("resultat");
+  texte.select();
+  document.execCommand("copy");
+  alert("Copié !");
+}
+</script>
+
+</body>
+</html>
