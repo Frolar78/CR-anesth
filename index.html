@@ -13,72 +13,43 @@ body {
   overflow: hidden;
 }
 
-h1 {
-  text-align: center;
-  margin: 6px;
-  font-size: 18px;
-}
+h1 { text-align:center; margin:6px; font-size:18px; }
 
 .grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: 1fr 1fr;
-  gap: 8px;
-  height: calc(100vh - 45px);
-  padding: 8px;
-  box-sizing: border-box;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  grid-template-rows:1fr 1fr;
+  gap:8px;
+  height:calc(100vh - 45px);
+  padding:8px;
 }
 
 .card {
-  background: white;
-  border-radius: 10px;
-  padding: 8px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  overflow: auto;
-}
-
-h3 {
-  margin: 5px 0;
-  font-size: 13px;
-}
-
-select, input {
-  width: 100%;
-  padding: 5px;
-  font-size: 12px;
-  margin-bottom: 5px;
+  background:white;
+  border-radius:10px;
+  padding:8px;
+  box-shadow:0 2px 5px rgba(0,0,0,0.1);
+  overflow:auto;
 }
 
 button.option {
-  padding: 6px;
-  margin: 2px;
-  font-size: 11px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  background: white;
-  cursor: pointer;
+  padding:6px;
+  margin:2px;
+  font-size:11px;
+  border-radius:6px;
+  border:1px solid #ccc;
+  background:white;
+  cursor:pointer;
 }
 
 button.option.active {
-  background: #007bff;
-  color: white;
+  background:#007bff;
+  color:white;
 }
 
-textarea {
-  width: 100%;
-  height: 100%;
-  font-size: 13px;
-}
+textarea { width:100%; height:100%; }
 
-.copy {
-  width: 100%;
-  padding: 8px;
-  background: #007bff;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  margin-top: 5px;
-}
+select,input { width:100%; margin-bottom:5px; }
 </style>
 </head>
 
@@ -88,7 +59,6 @@ textarea {
 
 <div class="grid">
 
-<!-- DATE / CHIR / ANESTH -->
 <div class="card">
 <h3>Date</h3>
 <input type="date" id="date">
@@ -100,34 +70,15 @@ textarea {
 <select id="anesth"></select>
 </div>
 
-<!-- SPECIALITE / GESTE -->
 <div class="card">
 <h3>Spécialité</h3>
 <select id="specialite">
-  <option value="">-- Choisir --</option>
-  <option value="ortho">Orthopédie</option>
-  <option value="visc">Viscérale</option>
-  <option value="uro">Urologie</option>
-  <option value="gyneco">Gynécologie</option>
-  <option value="endo">Endoscopie</option>
+<option value="">--</option>
+<option value="ortho">Orthopédie</option>
 </select>
 
 <h3>Geste</h3>
 <select id="geste"></select>
-
-<div id="coteBlock" style="display:none;">
-<h3>Côté</h3>
-<select id="cote">
-  <option value="">--</option>
-  <option value="droit">Droit</option>
-  <option value="gauche">Gauche</option>
-</select>
-</div>
-
-<div id="commentaireBlock" style="display:none;">
-<h3>Commentaire</h3>
-<input type="text" id="commentaire">
-</div>
 </div>
 
 <!-- ANESTHESIE -->
@@ -135,55 +86,48 @@ textarea {
 
 <h3>Conditionnement</h3>
 <button class="option" onclick="toggle(this)">Scope</button>
-<button class="option" onclick="toggle(this)">VVP</button>
-<button class="option" onclick="toggle(this)">KTA</button>
-<button class="option" onclick="toggle(this)">KTC</button>
-<button class="option" onclick="toggle(this)">BIS</button>
-<button class="option" onclick="toggle(this)">TOF</button>
+<button class="option" onclick="toggleKTA(this)">KTA</button>
+
+<div id="ktaOptions" style="display:none;">
+<select id="ktaSite">
+<option value="">Site</option>
+<option value="radial">Radial</option>
+<option value="femoral">Fémoral</option>
+</select>
+
+<select id="ktaCote">
+<option value="">Côté</option>
+<option value="droit">Droit</option>
+<option value="gauche">Gauche</option>
+</select>
+</div>
 
 <h3>Induction</h3>
 <button class="option" onclick="toggle(this)">Propofol</button>
-<button class="option" onclick="toggle(this)">Etomidate</button>
 <button class="option" onclick="toggle(this)">Remifentanil</button>
-<button class="option" onclick="toggle(this)">Sufentanil</button>
-<button class="option" onclick="toggle(this)">Ketamine</button>
-
-<h3>ALR</h3>
-<button class="option" onclick="toggleALR(this)">ALR</button>
-
-<select id="alrType" style="display:none;">
-<option value="">-- Choisir ALR --</option>
-<option>Bloc axillaire</option>
-<option>Bloc inter-scalénique</option>
-<option>Bloc paravertébral</option>
-<option>Bloc érecteur du rachis</option>
-<option>TAP-bloc</option>
-<option>Bloc sciatique poplité</option>
-<option>Bloc fémoral</option>
-</select>
 
 </div>
 
-<!-- RESULTAT -->
-<div class="card" style="grid-column: span 3;">
+<div class="card" style="grid-column:span 3;">
 <textarea id="resultat"></textarea>
-<button class="copy" onclick="copier()">Copier</button>
 </div>
 
 </div>
 
 <script>
 
-/* DATE */
+/* DATE AUTO */
 document.getElementById("date").valueAsDate = new Date();
 
-/* ANESTH */
-const anesthesistes = ["Dr ALBOUY","Dr BONNET","Dr FERRIERO"];
+/* FORMAT DATE FR */
+function formatDateFR(d){
+if(!d) return "";
+let parts=d.split("-");
+return parts[2]+"/"+parts[1]+"/"+parts[0];
+}
 
-const data = {
-ortho:{gestes:{PTG:{label:"PTG",cote:true}},chirurgiens:["Dr GHREA","Dr GUILLOT"].sort()},
-visc:{gestes:{Appendicectomie:{label:"Appendicectomie"}},chirurgiens:["Dr PANARO"].sort()}
-};
+/* ANESTH */
+const anesthesistes=["Dr A","Dr B"];
 
 /* INIT */
 function init(){
@@ -199,62 +143,17 @@ a.innerHTML+=`<option>${n}</option>`;
 }
 init();
 
-/* SPECIALITE */
-document.getElementById("specialite").addEventListener("change",function(){
-
-let spec=this.value;
-let chir=document.getElementById("chirurgien");
-let geste=document.getElementById("geste");
-
-chir.innerHTML="";
-geste.innerHTML="";
-
-let empty=document.createElement("option");
-empty.text="--";
-empty.selected=true;
-chir.add(empty);
-
-if(!data[spec]) return;
-
-data[spec].chirurgiens.forEach(c=>{
-chir.innerHTML+=`<option>${c}</option>`;
-});
-
-Object.keys(data[spec].gestes).forEach(k=>{
-let opt=document.createElement("option");
-opt.value=k;
-opt.text=data[spec].gestes[k].label;
-geste.add(opt);
-});
-
-generer();
-
-});
-
-/* GESTE */
-document.getElementById("geste").addEventListener("change",function(){
-
-let spec=document.getElementById("specialite").value;
-let key=this.value;
-let g=data[spec]?.gestes?.[key];
-
-document.getElementById("coteBlock").style.display=g?.cote?"block":"none";
-document.getElementById("commentaireBlock").style.display=g?.commentaire?"block":"none";
-
-generer();
-
-});
-
 /* TOGGLE */
 function toggle(b){
 b.classList.toggle("active");
 generer();
 }
 
-/* ALR */
-function toggleALR(b){
+/* KTA */
+function toggleKTA(b){
 b.classList.toggle("active");
-document.getElementById("alrType").style.display=b.classList.contains("active")?"block":"none";
+document.getElementById("ktaOptions").style.display=
+b.classList.contains("active")?"block":"none";
 generer();
 }
 
@@ -263,44 +162,41 @@ function generer(){
 
 let t="Patient pris en charge au bloc.\n\n";
 
-t+="Date : "+date.value+"\n";
-t+="Chirurgien : "+chirurgien.value+"\n";
-t+="Anesthésiste : "+anesth.value+"\n";
+/* DATE FR */
+let d=formatDateFR(document.getElementById("date").value);
+t+="Date : "+d+"\n";
 
-/* conditionnement */
+/* CONDITIONNEMENT */
 let cond=[];
-document.querySelectorAll(".card:nth-of-type(3) .option.active").forEach(b=>{
-if(["Scope","VVP","KTA","KTC","BIS","TOF"].includes(b.innerText)) cond.push(b.innerText);
-});
-if(cond.length) t+="Conditionnement : "+cond.join(", ")+"\n";
 
-/* induction */
-let ind=[];
-document.querySelectorAll(".card:nth-of-type(3) .option.active").forEach(b=>{
-if(["Propofol","Etomidate","Remifentanil","Sufentanil","Ketamine"].includes(b.innerText)) ind.push(b.innerText);
-});
-if(ind.length) t+="Induction : "+ind.join(", ")+"\n";
+/* Scope */
+if([...document.querySelectorAll(".option.active")]
+.some(b=>b.innerText==="Scope")){
+cond.push("Mise en place PNI, ECG 3 branches, SpO2");
+}
 
-/* ALR */
-let alrBtn=document.querySelector(".card:nth-of-type(3) .option.active");
-let alrType=document.getElementById("alrType").value;
+/* KTA */
+let ktaBtn=[...document.querySelectorAll(".option.active")]
+.find(b=>b.innerText==="KTA");
 
-if(alrBtn && alrType){
-t+="ALR : "+alrType+"\n";
+if(ktaBtn){
+let site=document.getElementById("ktaSite").value;
+let cote=document.getElementById("ktaCote").value;
+
+if(site && cote){
+cond.push("Cathéter artériel "+site+" "+cote);
+}
+}
+
+if(cond.length){
+t+="Conditionnement : "+cond.join(", ")+"\n";
 }
 
 document.getElementById("resultat").value=t;
 
 }
 
-/* COPY */
-function copier(){
-let t=document.getElementById("resultat");
-t.select();
-document.execCommand("copy");
-alert("Copié !");
-}
-
+/* EVENTS */
 document.querySelectorAll("select,button,input").forEach(e=>{
 e.addEventListener("change",generer);
 });
