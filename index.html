@@ -101,14 +101,16 @@ textarea {
 <h3>Geste</h3>
 
 <label>Spécialité :</label>
-<select id="specialite" onchange="updateGestes()">
+<select id="specialite">
   <option value="">--Choisir--</option>
   <option value="ortho">Orthopédie</option>
   <option value="digestif">Digestif</option>
 </select>
 
 <label>Acte :</label>
-<select id="geste"></select>
+<select id="geste">
+  <option value="">--Choisir--</option>
+</select>
 
 </div>
 
@@ -147,20 +149,24 @@ const gestes = {
   digestif: ["Appendicectomie", "Cholécystectomie"]
 };
 
-function updateGestes() {
-  let spec = document.getElementById("specialite").value;
+// UPDATE GESTES
+document.getElementById("specialite").addEventListener("change", function() {
+  let spec = this.value;
   let select = document.getElementById("geste");
 
-  select.innerHTML = "";
+  select.innerHTML = '<option value="">--Choisir--</option>';
 
-  gestes[spec].forEach(g => {
+  if (!gestes[spec]) return;
+
+  gestes[spec].forEach(function(g) {
     let option = document.createElement("option");
     option.text = g;
+    option.value = g;
     select.add(option);
   });
 
   generer();
-}
+});
 
 // BOUTONS
 function toggle(btn) {
@@ -168,7 +174,7 @@ function toggle(btn) {
   generer();
 }
 
-// GENERATION AUTO
+// GENERATION
 function generer() {
 
   let date = document.getElementById("date").value;
@@ -183,24 +189,26 @@ function generer() {
   texte += "Monitorage standard mis en place.\n\n";
 
   // INFOS
-  texte += "Date : " + date + "\n";
-  texte += "Chirurgien : " + chirurgien + "\n";
-  texte += "Anesthésiste : " + anesth + "\n";
-  texte += "Intervention : " + geste + "\n\n";
+  if (date) texte += "Date : " + date + "\n";
+  if (chirurgien) texte += "Chirurgien : " + chirurgien + "\n";
+  if (anesth) texte += "Anesthésiste : " + anesth + "\n";
+  if (geste) texte += "Intervention : " + geste + "\n";
+
+  texte += "\n";
 
   // TECHNIQUE
   let tech = [];
-  document.querySelectorAll(".card:nth-of-type(4) .active").forEach(b => {
+  document.querySelectorAll(".card:nth-of-type(4) .active").forEach(function(b) {
     tech.push(b.innerText);
   });
 
   if (tech.length > 0) {
-    texte += "Technique : " + tech.join(", ") + ".\n\n";
+    texte += "Technique : " + tech.join(", ") + ".\n";
   }
 
   // INCIDENTS
   let incidents = [];
-  document.querySelectorAll(".card:nth-of-type(5) .active").forEach(b => {
+  document.querySelectorAll(".card:nth-of-type(5) .active").forEach(function(b) {
     incidents.push(b.innerText);
   });
 
@@ -222,7 +230,7 @@ function copier() {
 }
 
 // AUTO UPDATE
-document.querySelectorAll("select, input").forEach(el => {
+document.querySelectorAll("select, input").forEach(function(el) {
   el.addEventListener("change", generer);
 });
 
