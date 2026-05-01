@@ -99,20 +99,10 @@ font-family:monospace;
 <div class="panel">
 <div class="section-title">Identité</div>
 
-<div class="row">
-<label>Date</label>
-<input type="date" id="date">
-</div>
-
-<div class="row">
-<label>Opérateur</label>
-<select id="operateur"></select>
-</div>
-
-<div class="row">
-<label>Anesthésiste</label>
-<select id="anesth"></select>
-</div>
+<div class="row"><label>Date</label><input type="date" id="date"></div>
+<div class="row"><label>Spécialité</label><select id="specialite"></select></div>
+<div class="row"><label>Opérateur</label><select id="operateur"></select></div>
+<div class="row"><label>Anesthésiste</label><select id="anesth"></select></div>
 </div>
 
 <!-- GESTE -->
@@ -148,6 +138,43 @@ font-family:monospace;
 <div class="panel">
 <div class="section-title">Per-opératoire</div>
 
+<!-- CONDITIONNEMENT -->
+<div class="row">
+<label>Conditionnement</label>
+<div>
+<label><input type="checkbox" id="scope"> Scope</label>
+<label><input type="checkbox" id="vvp"> VVP</label>
+<label><input type="checkbox" id="kta"> KTA</label>
+<label><input type="checkbox" id="ktc"> KTC</label>
+<label><input type="checkbox" id="bis"> BIS</label>
+<label><input type="checkbox" id="tof"> TOF</label>
+</div>
+</div>
+
+<!-- INDUCTION -->
+<div class="row">
+<label>Induction</label>
+<div>
+<label><input type="checkbox" id="propofol"> Propofol</label>
+<label><input type="checkbox" id="etomidate"> Etomidate</label>
+<label><input type="checkbox" id="ketamine"> Ketamine</label>
+<label><input type="checkbox" id="sufentanil"> Sufentanil</label>
+<label><input type="checkbox" id="remifentanil"> Remifentanil</label>
+</div>
+</div>
+
+<!-- CURARE -->
+<div class="row">
+<label>Curare</label>
+<div>
+<label><input type="checkbox" id="curare_aucun"> Aucun</label>
+<label><input type="checkbox" id="atracurium"> Atracurium</label>
+<label><input type="checkbox" id="rocuronium"> Rocuronium</label>
+<label><input type="checkbox" id="celocurine"> Celocurine</label>
+</div>
+</div>
+
+<!-- VAS -->
 <div class="row">
 <label>VAS</label>
 <div>
@@ -165,6 +192,22 @@ font-family:monospace;
 </div>
 </div>
 
+<div class="row">
+<label>Antibiothérapie</label><input id="atb">
+</div>
+
+<div class="row">
+<label>Entretien</label><input id="entretien">
+</div>
+
+<div class="row">
+<label>Noradrénaline</label><input id="norad">
+</div>
+
+<div class="row">
+<label>Autres</label><input id="autres">
+</div>
+
 <hr>
 
 <div class="output" id="resultat"></div>
@@ -175,7 +218,7 @@ font-family:monospace;
 
 <script>
 
-/* ================= DATE ================= */
+/* DATE */
 function formatDateFR(d){
 if(!d) return "";
 let [y,m,day]=d.split("-");
@@ -183,7 +226,7 @@ return day+"/"+m+"/"+y;
 }
 date.valueAsDate=new Date();
 
-/* ================= DONNÉES ORIGINALES RESTAURÉES ================= */
+/* ================= DATA COMPLETE RESTAURÉE ================= */
 
 const anesthesistes=[
 "Dr Stéphanie ALBOUY","Dr Guy ARMANDO","Dr Laure BONNET","Dr Mohammed BOUREGBA",
@@ -256,91 +299,37 @@ const gestes={
 "Clou gamma":{},
 "Plaque poignet":{},
 "Plaque cheville":{}
-},
-"Endoscopie Digestive":{
-"Gastroscopie":{},
-"Gastroscopie + Coloscopie":{},
-"Coloscopie":{},
-"ERCP":{},
-"Echo-endoscopie":{},
-"Mucosectomie":{},
-"POEM":{},
-"Dissection sous-muqueuse":{}
-},
-"Urologie":{},
-"Chirurgie Gynécologique":{},
-"Chirurgie ORL":{},
-"Radiologie Interventionnelle":{},
-"Cardiologie Interventionnelle":{},
-"Chirurgie Maxillo-Faciale":{},
-"Endoscopie Bronchique":{},
-"Chirurgie Esthétique":{}
+}
 };
 
 /* INIT */
 Object.keys(operateurs).forEach(s=>specialite.innerHTML+=`<option>${s}</option>`);
 anesthesistes.forEach(a=>anesth.innerHTML+=`<option>${a}</option>`);
 
-/* SPECIALITE */
-specialite.addEventListener("change",()=>{
-let s=specialite.value;
+/* CONDITIONNEMENT */
+function conditionnementText(){
 
-operateur.innerHTML="";
-(operateurs[s]||[]).forEach(o=>operateur.innerHTML+=`<option>${o}</option>`);
+let c=[];
 
-document.querySelectorAll(".geste").forEach(sel=>{
-sel.innerHTML="";
-Object.keys(gestes[s]||{}).forEach(g=>{
-sel.innerHTML+=`<option>${g}</option>`;
-});
-});
-});
+if(scope.checked)
+c.push("Conditionnement PNI, ECG 3 branches, SpO2");
 
-/* ADD GESTE */
-function addGeste(){
+if(vvp.checked)
+c.push("Voie veineuse périphérique en place");
 
-let container=document.getElementById("gestesContainer");
+if(kta.checked)
+c.push("Cathéter artériel radial droit");
 
-let div=document.createElement("div");
+if(ktc.checked)
+c.push("Cathéter veineux central jugulaire interne droit");
 
-div.innerHTML=`
-<div class="row geste-line">
-<label>Geste</label>
-<select class="geste"></select>
-</div>
+if(bis.checked)
+c.push("Monitorage BIS en place");
 
-<div class="row">
-<label>Côté</label>
-<select class="cote">
-<option value="">--</option>
-<option>Gauche</option>
-<option>Droite</option>
-</select>
-</div>
+if(tof.checked)
+c.push("Monitorage neuromusculaire TOF en place");
 
-<div class="row">
-<label>Commentaire</label>
-<input class="commentaire">
-</div>
-`;
-
-container.appendChild(div);
-
-/* refill */
-document.querySelectorAll(".geste").forEach(sel=>{
-let s=specialite.value;
-sel.innerHTML="";
-Object.keys(gestes[s]||{}).forEach(g=>{
-sel.innerHTML+=`<option>${g}</option>`;
-});
-});
-
-generer();
-}
-
-/* IOT */
-function toggleIOT(){
-iotBox.style.display = iot.checked ? "block":"none";
+return c;
 }
 
 /* GENERATION */
@@ -366,28 +355,19 @@ t+="\n";
 }
 });
 
-t+="\n";
-
-/* VAS */
-let vas=[];
-if(vs.checked) vas.push("Maintien d’une ventilation spontanée pendant toute la durée du geste");
-if(ml.checked) vas.push("Mise en place d’un masque laryngé");
-if(ventilation.checked) vas.push("Ventilation au masque facile");
-
-if(iot.checked){
-let txt="Intubation oro-trachéale atraumatique sans bris dentaire";
-if(cormack.value) txt+=" - Cormack "+cormack.value;
-if(pogo.value) txt+=" - POGO "+pogo.value;
-if(sonde.value) txt+=" - Sonde "+sonde.value;
-vas.push(txt);
-}
-
-t+="VAS : "+vas.join(" | ")+"\n";
+t+="\nConditionnement :\n";
+conditionnementText().forEach(x=>{
+t+="- "+x+"\n";
+});
 
 resultat.innerText=t;
 }
 
-document.querySelectorAll("input,select").forEach(e=>e.addEventListener("input",generer));
+/* listeners */
+document.querySelectorAll("input,select").forEach(e=>{
+e.addEventListener("input",generer);
+});
+
 generer();
 
 </script>
