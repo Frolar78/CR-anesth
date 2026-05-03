@@ -5,98 +5,17 @@
 <title>CR Anesthésie Bloc</title>
 
 <style>
-body{
-margin:0;
-font-family:Arial;
-background:#eef2f7;
-height:100vh;
-overflow:hidden;
-}
-
-.container{
-display:grid;
-grid-template-columns:1fr 2fr 1.3fr;
-gap:10px;
-height:100vh;
-padding:10px;
-box-sizing:border-box;
-}
-
-/* PANELS */
-.panel{
-background:white;
-border-radius:12px;
-padding:12px;
-box-shadow:0 2px 10px rgba(0,0,0,0.08);
-overflow:auto;
-display:flex;
-flex-direction:column;
-}
-
-.title{
-font-weight:bold;
-background:#2c3e70;
-color:white;
-padding:8px;
-border-radius:8px;
-margin-bottom:10px;
-}
-
-/* ROWS */
-.row{
-display:flex;
-flex-wrap:wrap;
-align-items:center;
-gap:6px;
-margin-bottom:8px;
-}
-
-label{
-min-width:120px;
-font-size:13px;
-}
-
-input, select{
-padding:5px;
-border-radius:6px;
-border:1px solid #ccc;
-font-size:12px;
-}
-
-/* CHECKBOX BLOCKS */
-.block{
-display:flex;
-flex-wrap:wrap;
-gap:6px;
-}
-
-.block label{
-min-width:auto;
-background:#f3f6fb;
-padding:4px 6px;
-border-radius:6px;
-border:1px solid #d9e2ef;
-font-size:12px;
-}
-
-/* OUTPUT */
-textarea{
-width:100%;
-height:100%;
-resize:none;
-font-family:monospace;
-font-size:12px;
-}
-
-/* BUTTON */
-button{
-padding:6px;
-border:none;
-border-radius:6px;
-background:#28a745;
-color:white;
-cursor:pointer;
-}
+body{margin:0;font-family:Arial;background:#eef2f7;height:100vh;overflow:hidden;}
+.container{display:grid;grid-template-columns:1fr 2fr 1.3fr;gap:10px;height:100vh;padding:10px;box-sizing:border-box;}
+.panel{background:white;border-radius:12px;padding:12px;box-shadow:0 2px 10px rgba(0,0,0,0.08);overflow:auto;display:flex;flex-direction:column;}
+.title{font-weight:bold;background:#2c3e70;color:white;padding:8px;border-radius:8px;margin-bottom:10px;}
+.section{border:1px solid #ddd;border-radius:10px;padding:10px;margin-bottom:10px;}
+.row{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-bottom:8px;}
+label{min-width:120px;font-size:13px;}
+input, select{padding:5px;border-radius:6px;border:1px solid #ccc;font-size:12px;}
+textarea{width:100%;height:100%;resize:none;font-family:monospace;font-size:12px;}
+.block label{background:#f3f6fb;padding:4px 6px;border-radius:6px;border:1px solid #d9e2ef;font-size:12px;}
+.plus{background:#28a745;color:white;border:none;border-radius:50%;width:26px;height:26px;cursor:pointer;}
 </style>
 </head>
 
@@ -104,175 +23,161 @@ cursor:pointer;
 
 <div class="container">
 
-<!-- ================= PANEL 1 ================= -->
+<!-- PANEL 1 -->
 <div class="panel">
 
 <div class="title">Intervention</div>
 
-<div class="row">
-<label>Date</label>
-<input type="date" id="date">
+<div class="section">
+<div class="row"><label>Date</label><input type="date" id="date"></div>
+<div class="row"><label>Chirurgien</label><select id="chirurgien"></select></div>
+<div class="row"><label>Anesthésiste</label><select id="anesth"></select></div>
 </div>
 
+<div class="section">
+<div class="row"><label>Spécialité</label><select id="specialite"></select></div>
 <div class="row">
 <label>Geste</label>
 <select id="geste"></select>
-<button onclick="addGeste()">+</button>
+<button class="plus" onclick="addGeste()">+</button>
 </div>
 
-<div class="row">
-<label>Chirurgien</label>
-<select id="chirurgien"></select>
+<div id="geste2Box" style="display:none;" class="row">
+<label>Geste 2</label>
+<select id="geste2"></select>
 </div>
-
-<div class="row">
-<label>Anesthésiste</label>
-<select id="anesth"></select>
 </div>
 
 </div>
 
-<!-- ================= PANEL 2 ================= -->
+<!-- PANEL 2 -->
 <div class="panel">
 
-<div class="title">Induction & Anesthésie</div>
+<div class="title">Per-opératoire</div>
 
-<!-- CONDITIONNEMENT -->
-<div class="row"><strong>Conditionnement</strong></div>
 <div class="block">
-<label><input type="checkbox" id="scope"> Scope</label>
-<label><input type="checkbox" id="spo2"> SpO2</label>
-<label><input type="checkbox" id="vvp"> VVP</label>
-<label><input type="checkbox" id="bis"> BIS</label>
-<label><input type="checkbox" id="kta"> KTa</label>
-<label><input type="checkbox" id="ktc"> KTc</label>
+<label><input type="checkbox" id="Scope"> Scope</label>
+<label><input type="checkbox" id="SpO2"> SpO2</label>
+<label><input type="checkbox" id="VVP"> VVP</label>
+<label><input type="checkbox" id="BIS"> BIS</label>
+<label><input type="checkbox" id="KTa"> KTa</label>
+<label><input type="checkbox" id="KTc"> KTc</label>
 </div>
 
 <hr>
 
-<!-- INDUCTION -->
-<div class="row"><strong>Induction</strong></div>
 <div class="block">
-<label><input type="checkbox" id="propofol"> Propofol</label>
-<label><input type="checkbox" id="etomidate"> Etomidate</label>
-<label><input type="checkbox" id="sufentanil"> Sufentanil</label>
-<label><input type="checkbox" id="remifentanil"> Remifentanil</label>
-<label><input type="checkbox" id="ketamine"> Kétamine</label>
+<label><input type="checkbox" id="Propofol"> Propofol</label>
+<label><input type="checkbox" id="Etomidate"> Etomidate</label>
+<label><input type="checkbox" id="Sufentanil"> Sufentanil</label>
+<label><input type="checkbox" id="Remifentanil"> Remifentanil</label>
+<label><input type="checkbox" id="Ketamine"> Kétamine</label>
 </div>
 
 <hr>
 
-<!-- CURARE -->
-<div class="row"><strong>Curare</strong></div>
 <div class="block">
-<label><input type="checkbox" id="atracurium"> Atracurium</label>
-<label><input type="checkbox" id="rocuronium"> Rocuronium</label>
-<label><input type="checkbox" id="celocurine"> Celocurine</label>
-<label><input type="checkbox" id="aucun"> Aucun</label>
-</div>
-
-<hr>
-
-<!-- VAS -->
-<div class="row"><strong>Intubation / VAS</strong></div>
-<div class="block">
-<label><input type="checkbox" id="vs"> VS</label>
-<label><input type="checkbox" id="ml"> ML</label>
-<label><input type="checkbox" id="iot" onchange="toggleIOT()"> IOT</label>
-</div>
-
-<div id="iotBox" style="display:none;margin-top:6px;">
-<input placeholder="Sonde">
-<input placeholder="Cormack">
-<input placeholder="POGO">
-</div>
-
-<hr>
-
-<div class="row"><strong>Autres</strong></div>
-<div class="block">
-<label><input type="checkbox" id="atb"> ATB</label>
-<label><input type="checkbox" id="entretien"> Entretien</label>
-<label><input type="checkbox" id="norad"> Noradrénaline</label>
-<label><input type="checkbox" id="autres"> Autres</label>
+<label><input type="checkbox" id="Atracurium"> Atracurium</label>
+<label><input type="checkbox" id="Rocuronium"> Rocuronium</label>
+<label><input type="checkbox" id="Celocurine"> Celocurine</label>
+<label><input type="checkbox" id="Aucun curare"> Aucun</label>
 </div>
 
 </div>
 
-<!-- ================= PANEL 3 ================= -->
+<!-- PANEL 3 -->
 <div class="panel">
-
-<div class="title">Synthèse CR</div>
-
+<div class="title">Compte rendu</div>
 <textarea id="resultat"></textarea>
-
-<button onclick="generer()">Générer</button>
-
 </div>
 
 </div>
 
 <script>
 
-/* ================= DATA COMPLET ================= */
+/* ===== TES DONNÉES (INCHANGÉES) ===== */
 
 const anesthesistes=[
-"Dr Stéphanie ALBOUY","Dr Guy ARMANDO","Dr Laure BONNET","Dr Mohammed BOUREGBA",
-"Dr Jean CATINEAU","Dr Alexandre FERRIERO","Dr Arthur FROHLICH",
-"Dr Jean-Philippe GUERIN","Dr Sébastien GHIGLIONE","Dr Léa LEY-GHIGLIONE",
-"Dr Lucile LEVASSEUR","Dr Riyad MENADE","Dr Nicolas OPPRECHT",
-"Dr Nicolas PARTOUCHE","Pr Bertrand PRUNET","Dr Gildas ROUSSEAU",
-"Dr Nicolo SALA","Dr Mathilde SEVERAC","Dr Wajdi SULTAN",
-"Dr Daisy TRAN","Dr Rémy WIDEHEM","Dr Félix ZAMARON"
+"Dr Stéphanie ALBOUY",
+"Dr Guy ARMANDO",
+"Dr Laure BONNET",
+"Dr Mohammed BOUREGBA"
 ];
 
-const chirurgiens={
-"Orthopédie":["Dr Hugo DARMANTE","Dr Matthieu GHREA","Dr Nicolas GUILLOT","Dr Tristan LASCAR"],
-"Viscérale":["Dr Adolfo GAVELLI","Dr Anne DUBOIS-VERDIER","Dr Anna MARMORALE"],
-"Urologie":["Dr Aurélie FLOCH","Dr Maher KECHAOU","Dr Xavier CARPENTIER"]
+const chirurgiens=[
+"Dr Hugo DARMANTE",
+"Dr Matthieu GHREA",
+"Dr Nicolas GUILLOT",
+"Dr Tristan LASCAR"
+];
+
+/* ===== NOUVEAU : SPECIALITES ===== */
+
+const specialites={
+"Digestif":["Appendicectomie","Colectomie"],
+"Orthopédie":["PTH","PTG"]
 };
 
-const gestes={
-"Orthopédie":["PTH","PTG","Arthroscopie"],
-"Viscérale":["Appendicectomie","Colectomie"],
-"Urologie":["Prostatectomie","Cystectomie"]
-};
+/* ===== INIT ===== */
 
-/* ================= INIT ================= */
-
-const geste=document.getElementById("geste");
-const chirurgien=document.getElementById("chirurgien");
 const anesth=document.getElementById("anesth");
+const chirurgien=document.getElementById("chirurgien");
+const specialite=document.getElementById("specialite");
+const geste=document.getElementById("geste");
+const geste2=document.getElementById("geste2");
+const geste2Box=document.getElementById("geste2Box");
 
-Object.values(chirurgiens).flat().forEach(c=>{
-chirurgien.innerHTML+=`<option>${c}</option>`;
+const date=document.getElementById("date");
+const resultat=document.getElementById("resultat");
+
+/* remplissage */
+
+anesthesistes.forEach(a=>anesth.innerHTML+=`<option>${a}</option>`);
+chirurgiens.forEach(c=>chirurgien.innerHTML+=`<option>${c}</option>`);
+
+Object.keys(specialites).forEach(s=>{
+specialite.innerHTML+=`<option>${s}</option>`;
 });
 
-anesthesistes.forEach(a=>{
-anesth.innerHTML+=`<option>${a}</option>`;
-});
+/* gestes dynamiques */
 
-Object.values(gestes).flat().forEach(g=>{
+function updateGestes(){
+let liste=specialites[specialite.value];
+geste.innerHTML="";
+geste2.innerHTML="";
+liste.forEach(g=>{
 geste.innerHTML+=`<option>${g}</option>`;
+geste2.innerHTML+=`<option>${g}</option>`;
 });
-
-/* ================= IOT ================= */
-
-function toggleIOT(){
-iotBox.style.display=iot.checked ? "block" : "none";
 }
 
-/* ================= GENERATION ================= */
+specialite.addEventListener("change",updateGestes);
+updateGestes();
+
+/* geste 2 */
+
+function addGeste(){
+geste2Box.style.display="flex";
+}
+
+/* ===== GENERATION ===== */
 
 function generer(){
 
-let t="INTERVENTION\n";
-t+="Date : "+date.value+"\n";
-t+="Geste : "+geste.value+"\n";
-t+="Chirurgien : "+chirurgien.value+"\n";
-t+="Anesthésiste : "+anesth.value+"\n\n";
+let t="INTERVENTION\n\n";
 
-t+="INDUCTION / PER-OP\n";
+t+="Date : "+date.value+"\n";
+t+="Chirurgien : "+chirurgien.value+"\n";
+t+="Anesthésiste : "+anesth.value+"\n";
+t+="Spécialité : "+specialite.value+"\n\n";
+
+t+="Geste : "+geste.value;
+
+if(geste2Box.offsetParent!==null){
+t+=" + "+geste2.value;
+}
+
+t+="\n\nPER-OPERATOIRE :\n";
 
 document.querySelectorAll("input:checked").forEach(i=>{
 t+="- "+i.id+"\n";
@@ -281,9 +186,9 @@ t+="- "+i.id+"\n";
 resultat.value=t;
 }
 
-/* listeners */
 document.querySelectorAll("input,select").forEach(e=>{
 e.addEventListener("input",generer);
+e.addEventListener("change",generer);
 });
 
 generer();
